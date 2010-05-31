@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="GetIn" >
+  
+  <target name="clean" depends="delete.database" >
+    <echo message="GetIn/bin/*.*" />
+    <delete>
+      <fileset>
+        <include name="GetIn/bin/**/*.*" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <target name="delete.database" >
+    <delete file="database/getin.db" />
+  </target>
+  
+</project>
