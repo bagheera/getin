@@ -23,7 +23,7 @@ namespace GetIn
             properties.Add("connection.driver_class", "NHibernate.Driver.SQLite20Driver");
             properties.Add("dialect", "NHibernate.Dialect.SQLiteDialect");
             properties.Add("connection.provider", "NHibernate.Connection.DriverConnectionProvider");
-            properties.Add("connection.connection_string", "Data Source=f:/getin/database/getin.db;Version=3;New=True;");
+            properties.Add("connection.connection_string", "Data Source=../../../database/getin.db;Version=3;New=True;");
             properties.Add("connection.release_mode", "on_close");
             properties.Add("show_sql", "true");
 
