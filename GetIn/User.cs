@@ -9,33 +9,38 @@ namespace GetIn
 {
     public class User
     {
+        public User(){
+        }
+
         public User(LoginId loginid, Name name)
         {
             Id = loginid;
             Name = name;
         }
 
-        public LoginId Id { get; private set; }
+        private int id;
 
-        public Profile Profile { get; set; }
+        public virtual LoginId Id { get; private set; }
 
-        public Name Name
+        public virtual Profile Profile { get; set; }
+
+        public virtual Name Name
         {
             get;
             private set;
         }
 
-        public Image Picture { get; set; }
+        public virtual Image Picture { get; set; }
 
-        public Dislikes Dislikes { get; set; }
+        public virtual Dislikes Dislikes { get; set; }
 
-        public Likes Likes { get; set; }
+        public virtual Likes Likes { get; set; }
 
-        public Gender Gender { get; set; }
+        public virtual Gender Gender { get; set; }
 
-        public Location Location { get; set; }
+        public virtual Location Location { get; set; }
 
-        public GetInDate DateOfBirth { get; set; }
+        public virtual GetInDate DateOfBirth { get; set; }
     }
 
     public class GetInDate

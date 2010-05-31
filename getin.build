@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<project name="GetIn" >
+<project name="GetIn" default="build">
   
   <property name="proj.name" value="GetIn" />
   <property name="proj.path" value="GetIn" />
   <property name="proj.soln" value="${proj.path}/GetIn.sln" />
+  <property name="MSBuildPath" value="C:\WINDOWS\Microsoft.NET\Framework\v3.5\MSBuild.exe"/>
   
   <target name="clean" depends="delete.database" >
     <echo message="${proj.path}/bin/*.*" />
@@ -15,14 +16,28 @@
   </target>
   
    <target name="compile" depends="clean">
-	   <msbuild verbosity="Quiet" project="${proj.soln}" target="Build"  />
-   </target>
+    <exec program="${MSBuildPath}">
+      <arg line='${proj.soln}' />
+      <arg value="/target:Rebuild" />
+      <arg value="/verbosity:quiet" />
+      <arg value="/nologo" />
+    </exec>
+  </target>
+   
+   
    
    <target name="test">
     <nunit2>
       <formatter type="Plain" />
       <test assemblyname="${proj.path}/bin/debug/${proj.name}.dll" />
     </nunit2>
+  </target>
+  
+   <target name="build" depends="compile, test" />
+   <target name="test.on.cruise" depends="create.database, test" />
+  
+  <target name="create.database" depends="delete.database" >
+	<exec program="sqlite3.exe" basedir="lib/sqllite" workingdir="database" commandline="-init DatabaseSchemas.sql getin.db"  />
   </target>
   
   <target name="delete.database" >
