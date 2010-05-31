@@ -1,0 +1,7 @@
+**/bin
+**/obj
+**.user
+**.suo
+_ReSharper.Getin
+*.sln.cache
+database/*.db
