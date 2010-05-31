@@ -7,16 +7,25 @@ namespace GetIn
 {
     public class Profile
     {
-        private String profile;
+        private String profileText;
 
+        public Profile(){
+            
+        }
         public Profile(string givenProfile)
         {
-            profile = givenProfile;
+            profileText = givenProfile;
+        }
+
+        public String ProfileText
+        {
+            get { return profileText; }
+            set { profileText = value; }
         }
 
         public override string ToString()
         {
-            return profile;
+            return profileText;
         }
     }
 }
