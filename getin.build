@@ -18,11 +18,15 @@
 	   <msbuild verbosity="Quiet" project="${proj.soln}" target="Build"  />
    </target>
    
-   <target name="test">
+   <target name="test" depends="create.database">
     <nunit2>
       <formatter type="Plain" />
       <test assemblyname="${proj.path}/bin/debug/${proj.name}.dll" />
     </nunit2>
+  </target>
+  
+  <target name="create.database" depends="delete.database" >
+	<exec program="sqlite3.exe" basedir="lib/sqllite" workingdir="database" commandline="-init DatabaseSchemas.sql getin.db"  />
   </target>
   
   <target name="delete.database" >
