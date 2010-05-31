@@ -4,6 +4,7 @@
   <property name="proj.name" value="GetIn" />
   <property name="proj.path" value="GetIn" />
   <property name="proj.soln" value="${proj.path}/GetIn.sln" />
+  <property name="MSBuildPath" value="C:\WINDOWS\Microsoft.NET\Framework\v3.5\MSBuild.exe"/>
   
   <target name="clean" depends="delete.database" >
     <echo message="${proj.path}/bin/*.*" />
@@ -15,8 +16,13 @@
   </target>
   
    <target name="compile" depends="clean">
-	   <msbuild verbosity="Quiet" project="${proj.soln}" target="Build"  />
-   </target>
+    <exec program="${MSBuildPath}">
+      <arg line='${proj.soln}' />
+      <arg value="/target:Rebuild" />
+      <arg value="/verbosity:quiet" />
+      <arg value="/nologo" />
+    </exec>
+  </target>
    
    <target name="test" depends="create.database">
     <nunit2>
