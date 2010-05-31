@@ -1,13 +1,28 @@
 <?xml version="1.0"?>
 <project name="GetIn" >
   
+  <property name="proj.name" value="GetIn" />
+  <property name="proj.path" value="GetIn" />
+  <property name="proj.soln" value="${proj.path}/GetIn.sln" />
+  
   <target name="clean" depends="delete.database" >
-    <echo message="GetIn/bin/*.*" />
+    <echo message="${proj.path}/bin/*.*" />
     <delete>
       <fileset>
-        <include name="GetIn/bin/**/*.*" />
+        <include name="${proj.path}/bin/**/*.*" />
       </fileset>
     </delete>
+  </target>
+  
+   <target name="compile" depends="clean">
+	   <msbuild verbosity="Quiet" project="${proj.soln}" target="Build"  />
+   </target>
+   
+   <target name="test">
+    <nunit2>
+      <formatter type="Plain" />
+      <test assemblyname="${proj.path}/bin/debug/${proj.name}.dll" />
+    </nunit2>
   </target>
   
   <target name="delete.database" >
