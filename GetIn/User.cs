@@ -5,14 +5,8 @@ using System.Text;
 
 namespace GetIn
 {
-    public class User
-    {
-        private Profile profile;
-
-        public Profile Profile
-        {
-            get { return profile; }
-            set { profile = value; }
-        }
+ public class User{
+     public virtual int Id { get; set; }
+     public virtual Profile Profile { get; set; }
     }
 }

@@ -1,4 +1,1 @@
-CREATE TABLE User ( Id INTEGER PRIMARY KEY,
-                  Name VARCHAR(30),
-				  Balance FLOAT				  
-				  );
+CREATE  TABLE "main"."User"("id" Integer PRIMARY KEY  NOT NULL , "name" VARCHAR, "profile" VARCHAR);

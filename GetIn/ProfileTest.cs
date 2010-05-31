@@ -16,7 +16,7 @@ namespace GetIn
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            InitalizeSessionFactory(new FileInfo("src/User.hbm.xml"), new FileInfo("src/Profile.hbm.xml"));
+            InitalizeSessionFactory(new FileInfo("User.hbm.xml"));
         }
 
         [SetUp]
@@ -41,6 +41,13 @@ namespace GetIn
             Profile profile = new Profile("Some useful profile goes here");
             User user = new User {Profile = profile};
             Assert.AreEqual(profile.ToString(),user.Profile.ToString());
+        }
+        [Test]
+        public void ShouldBeAbleToSaveUserWithProfile()
+        {
+            Profile profile = new Profile("Some useful profile goes here");
+            User user = new User { Profile = profile };
+            session.Save(user);
         }
     }
 

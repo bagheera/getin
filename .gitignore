@@ -6,3 +6,5 @@ _ReSharper.Getin
 *.sln.cache
 database/*.db
 b.log
+*~
+*.swp
