@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="GetIn" >
+<project name="GetIn" default="build">
   
   <property name="proj.name" value="GetIn" />
   <property name="proj.path" value="GetIn" />
@@ -24,6 +24,8 @@
     </exec>
   </target>
    
+   
+   
    <target name="test">
     <nunit2>
       <formatter type="Plain" />
@@ -31,6 +33,7 @@
     </nunit2>
   </target>
   
+   <target name="build" depends="compile, test" />
    <target name="test.on.cruise" depends="create.database, test" />
   
   <target name="create.database" depends="delete.database" >
