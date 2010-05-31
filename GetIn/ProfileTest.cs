@@ -31,20 +31,23 @@ namespace GetIn
             session.Dispose();
         }
         [Test]
-        public void ShouldBeAbleToCreateProfile(){
+        public void ShouldBeAbleToCreateProfile()
+        {
             Profile profile = new Profile("Some useful profile goes here");
             Assert.AreEqual("Some useful profile goes here", profile.ToString());
         }
 
         [Test]
-        public void ShouldBeAbleToCreateUserWithProfile(){
+        public void ShouldBeAbleToCreateUserWithProfile()
+        {
+            LoginId loginid = new LoginId("test@test.com");
+            string firstname = "firstName";
+            string lastname = "lastName";
+            Name name = new Name(firstname, lastname);
             Profile profile = new Profile("Some useful profile goes here");
-            User user = new User {Profile = profile};
-            Assert.AreEqual(profile.ToString(),user.Profile.ToString());
+
+            User user = new User(loginid, name) {Profile = profile};
+            Assert.AreEqual(profile.ToString(), user.Profile.ToString());
         }
     }
-
-   
-
-
 }
