@@ -12,15 +12,20 @@ namespace GetIn{
         }
 
         public Profile(string givenProfile){
-            if (givenProfile.Length > MAX_PROFILE_LENGTH){
-                givenProfile = givenProfile.Substring(0, MAX_PROFILE_LENGTH);
-            }
-            profileText = givenProfile;
+            ProfileText = givenProfile;
         }
 
         public String ProfileText{
+            
             get { return profileText; }
-            set { profileText = value; }
+            
+            set{
+                if (value.Length > MAX_PROFILE_LENGTH)
+                {
+                    value = value.Substring(0, MAX_PROFILE_LENGTH);
+                }
+                profileText = value;
+            }
         }
 
         public override string ToString(){
@@ -28,7 +33,13 @@ namespace GetIn{
         }
 
         public override bool Equals(object obj){
-            return base.Equals(obj);
+            return profileText == ((Profile) obj).ProfileText;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
     }
 }
