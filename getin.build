@@ -24,8 +24,6 @@
     </exec>
   </target>
    
-   
-   
    <target name="test">
     <nunit2>
       <formatter type="Plain" />
