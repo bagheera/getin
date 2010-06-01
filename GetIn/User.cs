@@ -41,6 +41,11 @@ namespace GetIn
         public virtual Location Location { get; set; }
 
         public virtual GetInDate DateOfBirth { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
     }
 
     public class GetInDate
