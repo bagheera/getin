@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Iesi.Collections.Generic;
 using NHibernate;
 using NUnit.Framework;
 
@@ -33,22 +34,24 @@ namespace GetIn
         [Test]
         public void ShouldBeAbleToCreateProfile(){
             Profile profile = new Profile("Some useful profile goes here");
-            Assert.AreEqual("Some useful profile goes here", profile.ToString());
         }
 
         [Test]
         public void ShouldBeAbleToCreateUserWithProfile(){
             Profile profile = new Profile("Some useful profile goes here");
             User user = new User {Profile = profile};
-            Assert.AreEqual(profile.ToString(),user.Profile.ToString());
         }
+
         [Test]
         public void ShouldBeAbleToSaveUserWithProfile()
         {
             Profile profile = new Profile("Some useful profile goes here");
             User user = new User { Profile = profile };
             session.Save(user);
+            IList<User> users=session.CreateQuery("from User").List<User>();
+            Assert.AreEqual(profile, users.First().Profile);
         }
+
     }
 
    

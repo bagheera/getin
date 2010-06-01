@@ -1,1 +1,1 @@
-CREATE  TABLE "main"."User"("id" Integer PRIMARY KEY  NOT NULL , "name" VARCHAR, "profile" VARCHAR);
+CREATE  TABLE User("id" Integer PRIMARY KEY  NOT NULL , "name" VARCHAR, "profile" VARCHAR);

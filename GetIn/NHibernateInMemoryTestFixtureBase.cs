@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
 
 namespace GetIn
 {
@@ -42,7 +43,7 @@ namespace GetIn
         {
             ISession openSession = sessionFactory.OpenSession();
             IDbConnection connection = openSession.Connection;
-            //new SchemaExport(configuration).Execute(false, true, false, true, connection, null);
+            new SchemaExport(configuration).Execute(false, true, false, true, connection, null);
             return openSession;
         }
     }
