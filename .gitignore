@@ -2,7 +2,7 @@
 **/obj
 **.user
 **.suo
-_ReSharper.Getin
+**/_ReSharper.Getin/*
 *.sln.cache
 database/*.db
 b.log
