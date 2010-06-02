@@ -50,7 +50,7 @@ namespace GetIn
         {
             UserProfileComments.Add(comment);
         }
-
+        //TODO Add ability to get all comments associated with a profile
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();

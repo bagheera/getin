@@ -6,7 +6,7 @@ namespace GetIn{
 
         public Comment(){
         }
-
+        //TODO Add date to a comment
         public Comment(User commentor, User commentedOn, String content){
             Commentor = commentor;
             CommentedOn = commentedOn;
