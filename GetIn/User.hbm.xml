@@ -1,11 +1,80 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="GetIn" namespace="GetIn">
-  <class name="User" table="User">
+  <class name="User" table="UserTable">
     <id name="id" access="field">
       <generator class="native" />
     </id>
+
+    <component name="Id">
+      <property name="Value" column="user_id" type="String" />
+    </component>
+
+    <component name="Name">
+      <property name="FirstName" column="first_name" type="String" />
+      <property name="LastName" column="last_name" type="String" />
+    </component>
+
+    <component name="Picture">
+      <property name="Bytes" column="user_pic" type="Byte[]" />
+    </component>
+    
+    <set name="Likes" cascade="save-update">
+      <key column="user_id"/>
+      <one-to-many class="Like"/>
+    </set>
+
+    <set name="Dislikes" cascade="save-update">
+      <key column="user_id"/>
+      <one-to-many class="Dislike"/>
+    </set>
+
+    <component name="Gender">               
+      <property name="Code" column="gender" type="Char" />
+    </component>
+
+    <!--<discriminator column="gender" />
+    <property name="Gender" column="gender" type="Gender" />
+
+    <subclass discriminator-value="M" extends="Gender" name="Male" />
+    <subclass discriminator-value="F" extends="Gender" name="Female" />-->
+
+    <component name="Location">
+      <property name="City" column="loc_city" type="String" />
+      <property name="ZipCode" column="loc_zipcode" type="String" />
+      <property name="Country" column="loc_country" type="String" />
+    </component>
+    
+    <component name="DateOfBirth">
+      <property name="Value" column="dob" type="DateTime" />
+    </component>
+        
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String" length="1024"/>
     </component>
   </class>
+
+  <class name="Like" table="LikesTable">
+    <id name="id" access="field">
+      <generator class="native" />
+    </id>
+
+    <component name="UserId">
+      <property name="Value" column="user_id" type="String" />
+    </component>
+
+    <property name="Text" column="like_text" type="String" />
+  </class>
+  
+  <class name="Dislike" table="DislikesTable">
+    <id name="id" access="field">
+      <generator class="native" />
+    </id>
+
+    <component name="UserId">
+      <property name="Value" column="user_id" type="String" />
+    </component>
+
+    <property name="Text" column="dislike_text" type="String" />
+  </class>
+  
 </hibernate-mapping>

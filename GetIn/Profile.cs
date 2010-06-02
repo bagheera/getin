@@ -17,7 +17,7 @@ namespace GetIn
             profileText = givenProfile;
         }
 
-        public String ProfileText
+        public virtual String ProfileText
         {
             get { return profileText; }
             set { profileText = value; }
