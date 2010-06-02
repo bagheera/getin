@@ -4,23 +4,26 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using Iesi.Collections.Generic;
 
 namespace GetIn
 {
     public class User
     {
         public User(){
+            CommentList = new HashedSet<Comment>();
         }
 
         public User(LoginId loginid, Name name)
         {
-            Id = loginid;
+            CommentList = new HashedSet<Comment>();
+            LoginId = loginid;
             Name = name;
         }
 
-        private int id;
+        public virtual int Id { get; set; }
 
-        public virtual LoginId Id { get; private set; }
+        public virtual LoginId LoginId { get; private set; }
 
         public virtual Profile Profile { get; set; }
 
@@ -41,6 +44,19 @@ namespace GetIn
         public virtual Location Location { get; set; }
 
         public virtual GetInDate DateOfBirth { get; set; }
+
+        public virtual void AddCommentToProfile(Comment comment)
+        {
+            CommentList.Add(comment);
+        }
+
+        public virtual Comment GetLatestProfileComment()
+        {
+            return CommentList.Last();
+        }
+
+        //public virtual UserProfileComments CommentList { get; set; }
+        public virtual ISet<Comment> CommentList { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -129,6 +145,9 @@ namespace GetIn
     public class LoginId
     {
         public string Id { get; private set; }
+        public LoginId(){
+        }
+
         public LoginId(string id)
         {
             Id = id;
@@ -171,5 +190,30 @@ namespace GetIn
         public string City { get; set; }
         public string Country { get; set; }
         public string ZipCode { get; set; }
+    }
+
+    public class UserProfileComments
+    {
+        private ISet<Comment> listOfComments;
+        public ISet<Comment> List
+        {
+            get { return listOfComments; }
+            set { listOfComments.Concat(@value); }
+        }
+
+        public UserProfileComments()
+        {
+            listOfComments = new HashedSet<Comment>();
+        }
+
+        public Comment GetLastComment()
+        {
+            return List.LastOrDefault();
+        }
+
+        public void Add(Comment comment)
+        {
+            List.Add(comment);
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace GetIn
             
             User user = new User(loginid, name);
             Assert.AreEqual(user.Name, name);
-            Assert.AreEqual(user.Id, loginid);
+            Assert.AreEqual(user.LoginId, loginid);
         }
 
         [Test]

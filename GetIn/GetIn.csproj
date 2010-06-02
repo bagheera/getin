@@ -94,6 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bigProfile.txt" />
+    <EmbeddedResource Include="Comment.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="MaxProfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

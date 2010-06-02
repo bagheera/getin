@@ -1,11 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="GetIn" namespace="GetIn">
   <class name="User" table="User">
-    <id name="id" access="field">
+    <id name="Id">
       <generator class="native" />
     </id>
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String"/>
     </component>
+    <component name="LoginId" >
+      <property name="Id" column="id" type="String"/>
+    </component>
+    <set name="CommentList" cascade="save-update">
+      <key column="user_commented_on"/>
+      <one-to-many class="Comment"/>
+    </set>
   </class>
 </hibernate-mapping>
