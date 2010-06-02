@@ -22,7 +22,7 @@ namespace GetIn
         }
         public IList<User> FindUser(LoginId loginId)
         {
-            IQuery qry = Session.CreateQuery("from User u where u.Id.Value = :param1").SetString("param1", loginId.Value);
+            IQuery qry = Session.CreateQuery("from User u where u.LoginId.Value = :param1").SetString("param1", loginId.Value);
             IList<User> usrs = qry.List<User>();
             return usrs;
         }
@@ -31,7 +31,7 @@ namespace GetIn
     public class UserAlreadyExistsException : Exception
     {
         public UserAlreadyExistsException(User usr)
-            : base(string.Format("User {0} already exists.", usr.Id.Value))
+            : base(string.Format("User {0} already exists.", usr.LoginId.Value))
         {
         }
     }

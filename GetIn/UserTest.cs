@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using NHibernate;
 using System.IO;
+using System.Linq;
 namespace GetIn
 {
     [TestFixture]
@@ -20,7 +21,7 @@ namespace GetIn
 
             User user = new User(loginid, name);
             Assert.AreEqual(user.Name, name);
-            Assert.AreEqual(user.Id, loginid);
+            Assert.AreEqual(user.LoginId, loginid);
         }
 
         [Test]
@@ -98,22 +99,14 @@ namespace GetIn
 
 
 
-            var sessionMock = new Moq.Mock<ISession>();
-            var queryMock = new Moq.Mock<IQuery>();
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.FindUser(loginid)).Returns(new List<User>());
+            repositoryMock.Setup(p => p.Save(user));
 
-            sessionMock.Setup(p => p.CreateQuery("from User u where u.Id.Value = :param1")).Returns(queryMock.Object);
-            queryMock.Setup(p => p.SetString("param1", user.Id.Value)).Returns(queryMock.Object);
-            queryMock.Setup(p => p.List<User>()).Returns(new List<User>());
-            sessionMock.Setup(p => p.Save(user));
-            sessionMock.Setup(p => p.Flush());
-
-            IUserRepository repository = new UserRepository(sessionMock.Object);
-
-            user.Repository = repository;
+            user.Repository = repositoryMock.Object;
 
             user.Register();
-            sessionMock.VerifyAll();
-            queryMock.VerifyAll();
+            repositoryMock.VerifyAll();
         }
 
         [Test]
@@ -152,20 +145,11 @@ namespace GetIn
                 Profile = new Profile("Big Profile")
             };
 
-
-
-            var sessionMock = new Moq.Mock<ISession>();
-            var queryMock = new Moq.Mock<IQuery>();
-
-            sessionMock.Setup(p => p.CreateQuery("from User u where u.Id.Value = :param1")).Returns(queryMock.Object);
-            queryMock.Setup(p => p.SetString("param1", user.Id.Value)).Returns(queryMock.Object);
-            queryMock.Setup(p => p.List<User>()).Returns(new List<User> { user });
-
-            IUserRepository repository = new UserRepository(sessionMock.Object);
-            user.Repository = repository;
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.FindUser(loginid)).Returns(new List<User>{user});
+            user.Repository = repositoryMock.Object;
             Assert.Throws(typeof(UserAlreadyExistsException), user.Register);
-            sessionMock.VerifyAll();
-            queryMock.VerifyAll();
+            repositoryMock.VerifyAll();
         }
 
     }
@@ -230,9 +214,37 @@ namespace GetIn
                                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                                 Profile = new Profile("Big Profile"),
                                 Repository = repository
-
                             };
-            user.Register();
+            repository.Save(user);
+            session.Evict(user);
+
+            var savedUser=repository.FindUser(loginid)[0];
+            
+
+            Assert.AreEqual(savedUser.LoginId,user.LoginId);
+            Assert.AreEqual(savedUser.Location.City, user.Location.City);
+            Assert.AreEqual(savedUser.Location.Country, user.Location.Country);
+            Assert.AreEqual(savedUser.DateOfBirth.Value, user.DateOfBirth.Value);
+            Assert.AreEqual(savedUser.Picture.Bytes.Length, user.Picture.Bytes.Length);
+            for (int i = 0; i < savedUser.Picture.Bytes.Length; i++)
+                Assert.AreEqual(savedUser.Picture.Bytes[i], user.Picture.Bytes[i]);
+            
+            Assert.AreEqual(savedUser.Likes.Count, user.Likes.Count);
+            var arraylikes1 = savedUser.Likes.ToArray();
+            var arraylikes2 = user.Likes.ToArray();
+            for (int i = 0; i < arraylikes1.Length; i++)
+                Assert.AreEqual(arraylikes1[i].Text, arraylikes2[i].Text);
+
+            Assert.AreEqual(savedUser.Dislikes.Count, user.Dislikes.Count);
+            var arraydislikes1 = savedUser.Dislikes.ToArray();
+            var arraydislikes2 = user.Dislikes.ToArray();
+            for (int i = 0; i < arraydislikes1.Length; i++)
+                Assert.AreEqual(arraydislikes1[i].Text, arraydislikes2[i].Text);
+
+            Assert.AreEqual(savedUser.Name.FirstName, user.Name.FirstName);
+            Assert.AreEqual(savedUser.Name.LastName, user.Name.LastName);
+
+            Assert.AreEqual(savedUser.Gender.Code, user.Gender.Code);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace GetIn
 
         public User(LoginId loginid, Name name)
         {
-            Id = loginid;
+            LoginId = loginid;
             Name = name;
         }
 
@@ -21,7 +21,7 @@ namespace GetIn
 
         private int id;
 
-        public virtual LoginId Id { get; set; }
+        public virtual LoginId LoginId { get; set; }
 
         public virtual Profile Profile { get; set; }
 
@@ -41,7 +41,7 @@ namespace GetIn
 
         public virtual void Register()
         {
-            var usrs = Repository.FindUser(this.Id);
+            var usrs = Repository.FindUser(this.LoginId);
             if (usrs.Count != 0)
             {
                 throw new UserAlreadyExistsException(this);
@@ -143,6 +143,11 @@ namespace GetIn
     public class Gender
     {
         private char gcode = 'M';
+
+        public Gender(){ }
+        public Gender(char code) {
+            Code = code; }
+
 
         public char Code
         {
