@@ -29,6 +29,11 @@ namespace GetIn
             LookUsersSetUp();
         }
 
+        [TearDown]
+        public void TearDown(){
+            session.Dispose();
+        }
+
         private void LookUsersSetUp(){
             User user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
@@ -42,7 +47,7 @@ namespace GetIn
             User user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-28)),
-                Location = new Location { City = "Banglore" },
+                Location = new Location { City = "Chennai" },
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Short and sweet profile"),
@@ -70,6 +75,14 @@ namespace GetIn
             Assert.AreEqual("678", results2[0].Id.Value);
         }
 
+        [Test]
+        public void LookupUserBasedOnLocation(){
+            User usr1 = new User(null, new Name(null, null));
+            usr1.Location = new Location {City = "Banglore"};
+            IList<User> results1 = usrRep.LookupUsers(usr1);
+            Assert.AreEqual(2, results1.Count());
+        }
+        
         /*[Test]
         public void LookUpUserBasedOnGender(){
             User usr1 = new User(null, new Name(null, null));

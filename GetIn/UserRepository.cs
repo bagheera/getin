@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace GetIn
 {
@@ -29,20 +30,30 @@ namespace GetIn
         }
 
         public IList<User> LookupUsers(User user){
-            if (user.Name != null && user.Name.FirstName != null){
-                Session.EnableFilter("FirstNameFilter").SetParameter("firstName", user.Name.FirstName);
-            } else{
-                Session.DisableFilter("FirstNameFilter");
+            ICriteria aQuery = Session.CreateCriteria(typeof(GetIn.User));
+            if (user.Name != null) {
+                addRestriction(aQuery, "Name.FirstName", user.Name.FirstName);
+                addRestriction(aQuery, "Name.LastName", user.Name.LastName);
             }
-            if (user.Name != null && user.Name.LastName != null){
-                Session.EnableFilter("LastNameFilter").SetParameter("lastName", user.Name.LastName);
-            } else{
-                Session.DisableFilter("LastNameFilter");
+            if(user.Location != null){
+                addRestriction(aQuery, "Location.Country", user.Location.Country);
+                addRestriction(aQuery, "Location.City", user.Location.City);
+                addRestriction(aQuery, "Location.ZipCode", user.Location.ZipCode);
             }
-            IQuery query = Session.CreateQuery("from User");
-            return query.List<User>();
+            return aQuery.List<User>();
         }
 
+        private void addRestriction(ICriteria criteria, String type, String value){
+            if (criteria != null && type != null && value != null){
+                criteria.Add(Expression.Like(type, value));
+            }
+        }
+
+        private void EnableFilter(String filterName, String paramName, String value){
+            if(!String.IsNullOrEmpty(value)){
+                Session.EnableFilter(filterName).SetParameter(paramName, value);
+            }
+        }
     }
 
     public class UserAlreadyExistsException : Exception
