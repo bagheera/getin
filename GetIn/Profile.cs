@@ -16,8 +16,8 @@ namespace GetIn{
             ProfileText = givenProfile;
         }
 
-        public System.String ProfileText{
-            
+        public virtual String ProfileText
+        {
             get { return profileText; }
             
             set{
