@@ -7,26 +7,28 @@ namespace GetIn
 {
     public class Comment
     {
-        public User Commentor { get { return commentor;} set { commentor = @value;}}
-        public Profile Profile { get { return commentedOn;} set { commentedOn = @value;}}
-        public CommentContent Content { get { return content; } set { content = @value; }}
+        public virtual User Commentor { get; set; }
+        public virtual User CommentedOn { get; set; }
+        //public String Content { get; set; }
+        public virtual String Content { get; set; }
 
-        private User commentor;
-        private Profile commentedOn;
-        private CommentContent content;
+        private int id;
 
-        public Comment(User commentor, Profile commentedOn, CommentContent content){
+        public Comment(){
+        }
+
+        public Comment(User commentor, User commentedOn, String content){
             Commentor = commentor;
-            Profile = commentedOn;
+            CommentedOn = commentedOn;
             Content = content;
-            Profile.addComment(this);
+            CommentedOn.AddCommentToProfile(this);
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Comment){
                 return (this.Commentor.Equals(((Comment) obj).Commentor) &&
-                        this.Profile.Equals(((Comment) obj).Profile) &&
+                        this.CommentedOn.Equals(((Comment) obj).CommentedOn) &&
                         this.Content.Equals(((Comment) obj).Content));
             }
             else{
@@ -35,20 +37,24 @@ namespace GetIn
         }
     }
 
-    public class CommentContent{
-        private string textComment;
-        public String TextComment { get { return textComment;} set{ textComment = @value;} }
-        public CommentContent(String comments){
-            TextComment = comments;
-        }
-        public override bool Equals(object obj)
-        {
-            if (obj is CommentContent){
-                return (this.TextComment.Equals(((CommentContent) obj).TextComment));
-            }
-            else{
-                return false;
-            }
-        }
-    }
+//    public class CommentContent{
+//        public System.String TextComment { get; set; }
+//
+//        public CommentContent(){
+//            
+//        }
+//
+//        public CommentContent(System.String comments){
+//            TextComment = comments;
+//        }
+//        public override bool Equals(object obj)
+//        {
+//            if (obj is CommentContent){
+//                return (this.TextComment.Equals(((CommentContent) obj).TextComment));
+//            }
+//            else{
+//                return false;
+//            }
+//        }
+//    }
 }

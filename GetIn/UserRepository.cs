@@ -24,8 +24,8 @@ namespace GetIn
 
         public IList<User> LookupUsers(User user){
             ICriteria aQuery = Session.CreateCriteria(typeof(GetIn.User));
-            if(user.Id != null){
-                addRestriction(aQuery, "Id", user.Id ,true);
+            if(user.LoginId != null){
+                addRestriction(aQuery, "LoginId", user.LoginId ,true);
             }
             if (user.Name != null) {
                 addRestriction(aQuery, "Name.FirstName", user.Name.FirstName,false);
@@ -53,7 +53,7 @@ namespace GetIn
     public class UserAlreadyExistsException : Exception
     {
         public UserAlreadyExistsException(User usr)
-            : base(string.Format("User {0} already exists.", usr.Id.Value))
+            : base(string.Format("User {0} already exists.", usr.LoginId.Value))
         {
         }
     }

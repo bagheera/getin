@@ -18,7 +18,7 @@ namespace GetIn
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            InitalizeSessionFactory(new FileInfo("User.hbm.xml"));
+            InitalizeSessionFactory(new FileInfo("User.hbm.xml"), new FileInfo("Comment.hbm.xml"));
         }
 
         [SetUp]
@@ -68,11 +68,11 @@ namespace GetIn
         public void LookupUsersBasedOnName(){
             User usr1 = new User(null,new Name("Mark", null));
             IList<User> results1 = usrRep.LookupUsers(usr1);
-            Assert.AreEqual("123", results1[0].Id.Value);
+            Assert.AreEqual("123", results1[0].LoginId.Value);
 
             User usr2 = new User(null,new Name(null, "anto"));
             IList<User> results2 = usrRep.LookupUsers(usr2);
-            Assert.AreEqual("678", results2[0].Id.Value);
+            Assert.AreEqual("678", results2[0].LoginId.Value);
         }
 
         [Test]

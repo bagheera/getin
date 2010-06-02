@@ -45,7 +45,7 @@ namespace GetIn
             var loginid = new LoginId("test@test.com");
             var name = new Name("firstName", "lastName");
 
-            String tooBigText = getBigProfileText("../../../GetIn/bigProfile.txt");
+            System.String tooBigText = getBigProfileText("../../../GetIn/bigProfile.txt");
             var profile = new Profile(tooBigText);
 
             var user = new User(loginid, name) { Profile = profile };
@@ -62,7 +62,7 @@ namespace GetIn
             var loginid = new LoginId("test@test.com");
             var name = new Name("firstName", "lastName");
 
-            String tooBigText = getBigProfileText("../../../GetIn/MaxProfile.txt");
+            System.String tooBigText = getBigProfileText("../../../GetIn/MaxProfile.txt");
             var profile = new Profile(tooBigText);
             
             var user = new User(loginid, name) { Profile = profile };
@@ -75,7 +75,7 @@ namespace GetIn
 
         private string	getBigProfileText(string fileName){
             var sr = new StreamReader(fileName);
-            String bigText=sr.ReadToEnd();
+            System.String bigText=sr.ReadToEnd();
             sr.Close();
             return bigText;
         }

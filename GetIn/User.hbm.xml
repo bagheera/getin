@@ -1,11 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="GetIn" namespace="GetIn">
   <class name="User" table="UserTable">
-    <id name="id" access="field">
+    <id name="Id">
       <generator class="native" />
     </id>
 
-    <component name="Id">
+    <set name="Friends" table="FriendTable" cascade="save-update">
+      <key column="user_id"/>
+      <many-to-many class="User" column="friend_id"/>
+    </set>
+
+    <component name="LoginId">
       <property name="Value" column="user_id" type="String" />
     </component>
 
@@ -18,7 +23,7 @@
       <property name="Bytes" column="user_pic" type="Byte[]" />
     </component>
     
-    <set name="Likes" cascade="save-update">
+    <set name="Likes" cascade="save-update" >
       <key column="user_id"/>
       <one-to-many class="Like"/>
     </set>
@@ -52,8 +57,13 @@
       <property name="ProfileText" column="profile" type="String"/>
     </component>
 
+    <component name="UserProfileComments">
+    <set name="List" cascade="save-update">
+      <key column="user_commented_on"/>
+      <one-to-many class="Comment"/>
+    </set>
+    </component>
   </class>
-
   <class name="Like" table="LikesTable">
     <id name="id" access="field">
       <generator class="native" />
@@ -76,6 +86,8 @@
     </component>
 
     <property name="Text" column="dislike_text" type="String" />
+
+
   </class>
 
 </hibernate-mapping>
