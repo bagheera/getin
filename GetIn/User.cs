@@ -9,13 +9,18 @@ namespace GetIn
     {
         public User()
         {
+            Friends = new HashedSet<User>();
         }
 
         public User(LoginId loginid, Name name)
         {
             Id = loginid;
             Name = name;
+            Friends = new HashedSet<User>();
         }
+
+
+        public virtual ISet<User> Friends { get; set; }
 
         public virtual IUserRepository Repository { get; set; }
 
@@ -47,6 +52,10 @@ namespace GetIn
                 throw new UserAlreadyExistsException(this);
             }
             Repository.Save(this);
+        }
+
+        public virtual void	 AddFriend(User friend){
+            Friends.Add	(friend);
         }
     }
 

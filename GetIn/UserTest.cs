@@ -194,6 +194,40 @@ namespace GetIn
         }
 
         [Test]
+        public void ShouldBeAbleToCreateFriends(){
+
+            var loginid = new LoginId("test@test.com");
+            var name = new Name("firstName", "lastName");
+            var user = new User(loginid, name);
+        
+            var loginid2 = new LoginId("test2@test.com");
+            var name2 = new Name("firstName2", "lastName2");
+            var user2 = new User(loginid2, name2);
+            
+            session.Save(user2);
+            
+            user.AddFriend(user2);
+            session.Save(user);
+            
+            session.Flush();
+
+            IList<User> users = session.CreateQuery("from User u where u.Id.Value='test@test.com'").List<User>();
+            Assert.AreEqual(1,users[0].Friends.Count);
+
+            var loginid3 = new LoginId("test3@test.com");
+            var name3 = new Name("firstName3", "lastName3");
+            var user3 = new User(loginid3, name3);
+            user.AddFriend(user3);
+            session.Save(user);
+
+            session.Flush();
+
+            users = session.CreateQuery("from User u where u.Id.Value='test@test.com'").List<User>();
+            Assert.AreEqual(2, users[0].Friends.Count);
+        
+        }
+
+        [Test]
         public void ShouldBeAbleToRegisterUser()
         {
 
