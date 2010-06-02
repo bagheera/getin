@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
@@ -47,7 +48,7 @@ namespace GetIn
 
         public virtual Comment GetLatestProfileComment()
         {
-            return CommentList.Last();
+            return CommentList.LastOrDefault();
         }
 
         //public virtual UserProfileComments CommentList { get; set; }
@@ -212,28 +213,28 @@ namespace GetIn
         public virtual string ZipCode { get; set; }
     }
 
-    public class UserProfileComments
-    {
-        private ISet<Comment> listOfComments;
-        public ISet<Comment> List
-        {
-            get { return listOfComments; }
-            set { listOfComments.Concat(@value); }
-        }
-
-        public UserProfileComments()
-        {
-            listOfComments = new HashedSet<Comment>();
-        }
-
-        public Comment GetLastComment()
-        {
-            return List.LastOrDefault();
-        }
-
-        public void Add(Comment comment)
-        {
-            List.Add(comment);
-        }
-    }
+//    public class UserProfileComments
+//    {
+//        private List<Comment> listOfComments;
+//        public List<Comment> List
+//        {
+//            get { return listOfComments; }
+//            set { listOfComments.Concat(@value); }
+//        }
+//
+//        public UserProfileComments()
+//        {
+//            listOfComments = new List<Comment>();
+//        }
+//
+//        public Comment GetLastComment()
+//        {
+//            return List.LastOrDefault();
+//        }
+//
+//        public void Add(Comment comment)
+//        {
+//            List.Add(comment);
+//        }
+//    }
 }

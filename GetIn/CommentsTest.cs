@@ -75,8 +75,15 @@ namespace GetIn
             Comment comment = new Comment(user1, user2, content);
             session.Save(user2);
             session.Flush();
-            IList<User> users = session.CreateQuery("from User U where U.Id = :id").SetParameter("id", loginid2).List<User>();
-            Assert.AreEqual(content, users.First().GetLatestProfileComment());
+            User interestedUser = null;
+            IList<User> users = session.CreateQuery("from User").List<User>();
+            foreach (User user in users){
+                if (user.LoginId.Value == loginid2.Value){
+                    interestedUser = user;
+                    break;
+                }
+            }
+            Assert.AreEqual(content, interestedUser.GetLatestProfileComment().Content);
         }
     }
 }
