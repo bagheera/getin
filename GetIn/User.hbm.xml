@@ -5,6 +5,11 @@
       <generator class="native" />
     </id>
 
+    <set name="Friends" table="FriendTable" cascade="save-update">
+      <key column="user_id"/>
+      <many-to-many class="User" column="friend_id"/>
+    </set>
+
     <component name="LoginId">
       <property name="Value" column="user_id" type="String" />
     </component>
@@ -18,7 +23,7 @@
       <property name="Bytes" column="user_pic" type="Byte[]" />
     </component>
     
-    <set name="Likes" cascade="save-update">
+    <set name="Likes" cascade="save-update" >
       <key column="user_id"/>
       <one-to-many class="Like"/>
     </set>
@@ -58,7 +63,6 @@
     <filter name="FirstNameFilter" condition=":firstName like first_name"/>
     <filter name="LastNameFilter" condition=":lastName like last_name"/>
   </class>
-
   <class name="Like" table="LikesTable">
     <id name="id" access="field">
       <generator class="native" />
@@ -81,6 +85,8 @@
     </component>
 
     <property name="Text" column="dislike_text" type="String" />
+
+
   </class>
 
   <filter-def name="FirstNameFilter">
