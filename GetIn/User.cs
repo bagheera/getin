@@ -8,14 +8,9 @@ namespace GetIn
 {
     public class User
     {
-<<<<<<< HEAD
         public User(){
             CommentList = new HashedSet<Comment>();
-=======
-        public User()
-        {
             Friends = new HashedSet<User>();
->>>>>>> 38f4cd43a05150a2eaf93a9beac94acc7adb699b
         }
 
         public User(LoginId loginid, Name name)
