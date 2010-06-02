@@ -41,7 +41,8 @@ namespace GetIn
 
         public virtual void Register()
         {
-            var usrs = Repository.FindUser(this.Id);
+            User usrToChkUnique = new User(this.Id,new Name());
+            var usrs = Repository.LookupUsers(usrToChkUnique);
             if (usrs.Count != 0)
             {
                 throw new UserAlreadyExistsException(this);

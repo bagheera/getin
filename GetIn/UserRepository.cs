@@ -22,36 +22,30 @@ namespace GetIn
             Session.Flush();
         }
 
-        public IList<User> FindUser(LoginId loginId)
-        {
-            IQuery qry = Session.CreateQuery("from User u where u.Id.Value = :param1").SetString("param1", loginId.Value);
-            IList<User> usrs = qry.List<User>();
-            return usrs;
-        }
-
         public IList<User> LookupUsers(User user){
             ICriteria aQuery = Session.CreateCriteria(typeof(GetIn.User));
+            if(user.Id != null){
+                addRestriction(aQuery, "Id", user.Id ,true);
+            }
             if (user.Name != null) {
-                addRestriction(aQuery, "Name.FirstName", user.Name.FirstName);
-                addRestriction(aQuery, "Name.LastName", user.Name.LastName);
+                addRestriction(aQuery, "Name.FirstName", user.Name.FirstName,false);
+                addRestriction(aQuery, "Name.LastName", user.Name.LastName,false);
             }
             if(user.Location != null){
-                addRestriction(aQuery, "Location.Country", user.Location.Country);
-                addRestriction(aQuery, "Location.City", user.Location.City);
-                addRestriction(aQuery, "Location.ZipCode", user.Location.ZipCode);
+                addRestriction(aQuery, "Location.Country", user.Location.Country,false);
+                addRestriction(aQuery, "Location.City", user.Location.City, false);
+                addRestriction(aQuery, "Location.ZipCode", user.Location.ZipCode, false);
             }
             return aQuery.List<User>();
         }
 
-        private void addRestriction(ICriteria criteria, String type, String value){
+        private void addRestriction(ICriteria criteria, String type, Object value,Boolean exactMatch){
             if (criteria != null && type != null && value != null){
-                criteria.Add(Expression.Like(type, value));
-            }
-        }
-
-        private void EnableFilter(String filterName, String paramName, String value){
-            if(!String.IsNullOrEmpty(value)){
-                Session.EnableFilter(filterName).SetParameter(paramName, value);
+                if (!exactMatch){
+                    criteria.Add(Expression.Like(type, value));
+                } else{
+                    criteria.Add(Expression.Eq(type, value));
+                }
             }
         }
     }
@@ -67,7 +61,6 @@ namespace GetIn
     public interface IUserRepository
     {
         void Save(User user);
-        IList<User> FindUser(LoginId loginId);
         IList<User> LookupUsers(User user);
     }
 }

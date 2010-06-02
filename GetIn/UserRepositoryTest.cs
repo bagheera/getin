@@ -38,7 +38,7 @@ namespace GetIn
             User user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25)),
-                Location = new Location { City = "Banglore" },
+                Location = new Location { City = "Banglore", Country = "India"},
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile"),
@@ -47,7 +47,7 @@ namespace GetIn
             User user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-28)),
-                Location = new Location { City = "Chennai" },
+                Location = new Location { City = "Seattle", Country = "USA"},
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Short and sweet profile"),
@@ -56,7 +56,7 @@ namespace GetIn
             User user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-26)),
-                Location = new Location { City = "Banglore" },
+                Location = new Location { City = "Banglore", Country = "India"},
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile"),
@@ -81,6 +81,23 @@ namespace GetIn
             usr1.Location = new Location {City = "Banglore"};
             IList<User> results1 = usrRep.LookupUsers(usr1);
             Assert.AreEqual(2, results1.Count());
+
+            User usr2 = new User(null, new Name(null, null));
+            usr2.Location = new Location {Country = "USA"};
+            IList<User> results2 = usrRep.LookupUsers(usr2);
+            Assert.AreEqual(1, results2.Count());
+
+            User usr3 = new User(null, new Name(null, null));
+            usr3.Location = new Location {Country = "Canada"};
+            IList<User> results3 = usrRep.LookupUsers(usr3);
+            Assert.AreEqual(0, results3.Count());
+        }
+
+        [Test]
+        public void LookUpBasedOnId(){
+            User usr1 = new User(new LoginId("123"), new Name(null, null));
+            IList<User> results2 = usrRep.LookupUsers(usr1);
+            Assert.AreEqual(1, results2.Count());
         }
         
         /*[Test]
