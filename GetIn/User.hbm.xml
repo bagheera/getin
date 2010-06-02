@@ -10,7 +10,7 @@
       <many-to-many class="User" column="friend_id"/>
     </set>
 
-    <component name="Id">
+    <component name="LoginId">
       <property name="Value" column="user_id" type="String" />
     </component>
 
@@ -56,6 +56,9 @@
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String"/>
     </component>
+
+    <filter name="FirstNameFilter" condition=":firstName like first_name"/>
+    <filter name="LastNameFilter" condition=":lastName like last_name"/>
   </class>
   <class name="Like" table="LikesTable">
     <id name="id" access="field">
@@ -82,5 +85,11 @@
 
 
   </class>
-  
+
+  <filter-def name="FirstNameFilter">
+    <filter-param name="firstName" type="string"/>
+  </filter-def>
+  <filter-def name="LastNameFilter">
+    <filter-param name="lastName" type="string"/>
+  </filter-def>
 </hibernate-mapping>
