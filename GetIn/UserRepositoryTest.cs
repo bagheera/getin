@@ -37,9 +37,9 @@ namespace GetIn
         private void LookUsersSetUp(){
             User user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
-                DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25)),
+                DateOfBirth = new GetInDate(DateTime.Today.AddYears(-19)),
                 Location = new Location { City = "Banglore", Country = "India"},
-                Gender = new Gender(),
+                Gender = new Gender('F'),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile"),
             };
@@ -50,16 +50,16 @@ namespace GetIn
                 Location = new Location { City = "Seattle", Country = "USA"},
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
-                Profile = new Profile("Short and sweet profile"),
+                Profile = new Profile("Short and sweet crap"),
             };
             usrRep.Save(user2);
             User user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
             {
-                DateOfBirth = new GetInDate(DateTime.Today.AddYears(-26)),
+                DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25)),
                 Location = new Location { City = "Banglore", Country = "India"},
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
-                Profile = new Profile("Big Profile"),
+                Profile = new Profile("Some profile information which is useless!!! \n Some more crap!"),
             };
             usrRep.Save(user3);            
         }
@@ -99,7 +99,40 @@ namespace GetIn
             IList<User> results2 = usrRep.LookupUsers(usr1);
             Assert.AreEqual(1, results2.Count());
         }
-        
+
+        [Test]
+        public void LookupBasedOnGender(){
+            User usr1 = new User(null, new Name(null, null));
+            usr1.Gender = new Gender('F');
+            IList<User> results = usrRep.LookupUsers(usr1);
+            Assert.AreEqual(1,results.Count);
+        }
+
+        [Test]
+        public void LookupBasedOnAge(){
+            User usr = new User(null, new Name(null,null));
+            usr.DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25));
+            IList<User> results = usrRep.LookupUsers(usr, new AgeRange{From = 20, To = 29});
+            Assert.AreEqual(2, results.Count);
+        }
+
+        [Test]
+        public void LookupBasedOnProfile(){
+            User usr = new User(null, new Name(null, null));
+            usr.Profile = new Profile("crap");
+            IList<User> results = usrRep.LookupUsers(usr);
+            Assert.AreEqual(2, results.Count);
+        }
+
+        [Test]
+        public void LookupBasedOnAgeAndName(){
+            User usr = new User(null, new Name(null, null));
+            usr.DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25));
+            usr.Name = new Name{FirstName = "Alex"};
+            IList<User> results = usrRep.LookupUsers(usr);
+            Assert.AreEqual(1, results.Count);
+        }
+
         /*[Test]
         public void LookUpUserBasedOnGender(){
             User usr1 = new User(null, new Name(null, null));

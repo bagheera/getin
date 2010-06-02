@@ -254,4 +254,10 @@ namespace GetIn
             List.Add(comment);
         }
     }
+
+    public class AgeRange
+    {
+        public int From { get; set; }
+        public int To { get; set; }
+    }
 }
