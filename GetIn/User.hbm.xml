@@ -5,7 +5,7 @@
       <generator class="native" />
     </id>
 
-    <component name="Id">
+    <component name="LoginId">
       <property name="Value" column="user_id" type="String" />
     </component>
 
@@ -51,13 +51,12 @@
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String"/>
     </component>
-    <component name="LoginId" >
-      <property name="Id" column="id" type="String"/>
-    </component>
     <set name="CommentList" cascade="save-update">
       <key column="user_commented_on"/>
       <one-to-many class="Comment"/>
     </set>
+    <filter name="FirstNameFilter" condition=":firstName like first_name"/>
+    <filter name="LastNameFilter" condition=":lastName like last_name"/>
   </class>
 
   <class name="Like" table="LikesTable">
@@ -83,5 +82,11 @@
 
     <property name="Text" column="dislike_text" type="String" />
   </class>
-  
+
+  <filter-def name="FirstNameFilter">
+    <filter-param name="firstName" type="string"/>
+  </filter-def>
+  <filter-def name="LastNameFilter">
+    <filter-param name="lastName" type="string"/>
+  </filter-def>
 </hibernate-mapping>
