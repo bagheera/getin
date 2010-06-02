@@ -9,13 +9,13 @@ namespace GetIn
     public class User
     {
         public User(){
-            CommentList = new HashedSet<Comment>();
+            UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
         }
 
         public User(LoginId loginid, Name name)
         {
-            CommentList = new HashedSet<Comment>();
+            UserProfileComments = new UserProfileComments();
             LoginId = loginid;
             Name = name;
             Friends = new HashedSet<User>();
@@ -48,16 +48,16 @@ namespace GetIn
 
         public virtual void AddCommentToProfile(Comment comment)
         {
-            CommentList.Add(comment);
+            UserProfileComments.Add(comment);
         }
 
         public virtual Comment GetLatestProfileComment()
         {
-            return CommentList.LastOrDefault();
+            return UserProfileComments.GetLastComment();
         }
 
-        //public virtual UserProfileComments CommentList { get; set; }
-        public virtual ISet<Comment> CommentList { get; set; }
+        public virtual UserProfileComments UserProfileComments { get; set; }
+        //public virtual ISet<Comment> CommentList { get; set; }
 
         public override bool Equals(object obj){
             return base.Equals(obj);
@@ -222,28 +222,27 @@ namespace GetIn
         public virtual string ZipCode { get; set; }
     }
 
-//    public class UserProfileComments
-//    {
-//        private List<Comment> listOfComments;
-//        public List<Comment> List
-//        {
-//            get { return listOfComments; }
-//            set { listOfComments.Concat(@value); }
-//        }
-//
-//        public UserProfileComments()
-//        {
-//            listOfComments = new List<Comment>();
-//        }
-//
-//        public Comment GetLastComment()
-//        {
-//            return List.LastOrDefault();
-//        }
-//
-//        public void Add(Comment comment)
-//        {
-//            List.Add(comment);
-//        }
-//    }
+    public class UserProfileComments
+    {
+        //private ISet<Comment> listOfComments;
+        public virtual ISet<Comment> List
+        {
+            get; set;
+        }
+
+        public UserProfileComments()
+        {
+            List = new HashedSet<Comment>();
+        }
+
+        public Comment GetLastComment()
+        {
+            return List.LastOrDefault();
+        }
+
+        public void Add(Comment comment)
+        {
+            List.Add(comment);
+        }
+    }
 }

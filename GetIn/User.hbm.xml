@@ -56,10 +56,12 @@
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String"/>
     </component>
-    <set name="CommentList" cascade="save-update">
+    <component name="UserProfileComments">
+    <set name="List" cascade="save-update">
       <key column="user_commented_on"/>
       <one-to-many class="Comment"/>
     </set>
+    </component>
     <filter name="FirstNameFilter" condition=":firstName like first_name"/>
     <filter name="LastNameFilter" condition=":lastName like last_name"/>
   </class>
