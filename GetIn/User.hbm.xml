@@ -49,7 +49,7 @@
     </component>
         
     <component name="Profile" >
-      <property name="ProfileText" column="profile" type="String" length="1024"/>
+      <property name="ProfileText" column="profile" type="String"/>
     </component>
   </class>
 

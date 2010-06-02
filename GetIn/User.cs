@@ -163,10 +163,10 @@ namespace GetIn
             return Code == 'M' ? "Male" : "Female";
         }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj){
             return base.Equals(obj);
         }
+
 
         public bool Equals(Gender other)
         {
