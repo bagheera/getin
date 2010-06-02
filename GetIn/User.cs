@@ -50,7 +50,7 @@ namespace GetIn
         {
             UserProfileComments.Add(comment);
         }
-
+        //TODO Add ability to get all comments associated with a profile
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
@@ -59,8 +59,16 @@ namespace GetIn
         public virtual UserProfileComments UserProfileComments { get; set; }
         //public virtual ISet<Comment> CommentList { get; set; }
 
-        public override bool Equals(object obj){
-            return base.Equals(obj);
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ((User)other).Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
         }
 
         public virtual void Register()
