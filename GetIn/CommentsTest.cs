@@ -58,23 +58,17 @@ namespace GetIn
         [Test]
         public void UserShouldBeAbleToSaveComments(){
             LoginId loginid1 = new LoginId("testcomments@test.com");
-            string firstname1 = "firstName1";
-            string lastname1 = "lastName1";
-            Name name1 = new Name(firstname1, lastname1);
+            Name name1 = new Name("firstName1", "lastName1");
             User user1 = new User(loginid1, name1);
-            session.Save(user1);
+            IUserRepository repository = new UserRepository(session);
+            repository.Save(user1);
             LoginId loginid2 = new LoginId("testprofile@test.com");
-            string firstname2 = "firstName2";
-            string lastname2 = "lastName2";
-            Name name2 = new Name(firstname2, lastname2);
+            Name name2 = new Name("firstName2", "lastName2");
             Profile profile = new Profile("This is the profile on which user1 will comment");
             User user2 = new User(loginid2, name2) { Profile = profile };
 
-            String content = "This is what I am going to comment";
-
-            Comment comment = new Comment(user1, user2, content);
-            session.Save(user2);
-            session.Flush();
+            new Comment(user1, user2, "This is what I am going to comment");
+            repository.Save(user2);
             User interestedUser = null;
             IList<User> users = session.CreateQuery("from User").List<User>();
             foreach (User user in users){
@@ -83,7 +77,13 @@ namespace GetIn
                     break;
                 }
             }
-            Assert.AreEqual(content, interestedUser.GetLatestProfileComment().Content);
+            if (interestedUser != null){
+                Assert.AreEqual("This is what I am going to comment", interestedUser.GetLatestProfileComment().Content);
+                Assert.AreEqual(user1,interestedUser.GetLatestProfileComment().Commentor);
+            }
+            else{
+                Assert.Fail();
+            }
         }
     }
 }
