@@ -148,8 +148,13 @@ namespace GetIn
 
         public virtual DateTime Value { get; set; }
 
-        public void Subtract(int years){
-            Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
+        public GetInDate Subtract(int years){
+            return new GetInDate(Value.Subtract(new TimeSpan(365*years, 0, 0, 0)));
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
 
         public bool Equals(GetInDate other)
