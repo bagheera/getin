@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" auto-import="true" assembly="GetIn" namespace="GetIn">
   <class name="User" table="UserTable">
-    <id name="id" access="field">
+    <id name="Id">
       <generator class="native" />
     </id>
 
@@ -51,8 +51,12 @@
       <property name="ProfileText" column="profile" type="String"/>
     </component>
 
-    <filter name="FirstNameFilter" condition=":firstName like first_name"/>
-    <filter name="LastNameFilter" condition=":lastName like last_name"/>
+    <component name="UserProfileComments">
+    <set name="List" cascade="save-update">
+      <key column="user_commented_on"/>
+      <one-to-many class="Comment"/>
+    </set>
+    </component>
   </class>
   <class name="Like" table="LikesTable">
     <id name="id" access="field">
@@ -80,10 +84,4 @@
 
   </class>
 
-  <filter-def name="FirstNameFilter">
-    <filter-param name="firstName" type="string"/>
-  </filter-def>
-  <filter-def name="LastNameFilter">
-    <filter-param name="lastName" type="string"/>
-  </filter-def>
 </hibernate-mapping>

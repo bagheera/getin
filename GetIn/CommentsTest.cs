@@ -10,8 +10,28 @@ using NUnit.Framework;
 namespace GetIn
 {
     [TestFixture]
-    public class CommentsTest
+    public class CommentsTest : NHibernateFixtureBase
     {
+        private ISession session;
+
+        [TestFixtureSetUp]
+        public void TestFixtureSetUp()
+        {
+            InitalizeSessionFactory(new FileInfo("Comment.hbm.xml"), new FileInfo("User.hbm.xml"));
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+                session = CreateSession();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            session.Dispose();
+        }
+    
         [Test]
         public void UserShouldBeAbleToCommentOnAProfile(){
             LoginId loginid1 = new LoginId("testcomments@test.com");
@@ -27,12 +47,43 @@ namespace GetIn
             Profile profile = new Profile("This is the profile on which user1 will comment");
             User user2 = new User(loginid2, name2) { Profile = profile };
 
-            CommentContent content = new CommentContent("This is what I am going to comment");
+            String content = "This is what I am going to comment";
 
-            Comment comment = new Comment(user1, profile, content);
+            Comment comment = new Comment(user1, user2, content);
             Assert.AreEqual(comment.Commentor, user1);
-            Assert.AreEqual(comment.Profile, profile);
-            Assert.AreEqual(comment, profile.getLatestComment());
+            Assert.AreEqual(comment.CommentedOn, user2);
+            Assert.AreEqual(comment, user2.GetLatestProfileComment());
+        }
+
+        [Test]
+        public void UserShouldBeAbleToSaveComments(){
+            LoginId loginid1 = new LoginId("testcomments@test.com");
+            Name name1 = new Name("firstName1", "lastName1");
+            User user1 = new User(loginid1, name1);
+            IUserRepository repository = new UserRepository(session);
+            repository.Save(user1);
+            LoginId loginid2 = new LoginId("testprofile@test.com");
+            Name name2 = new Name("firstName2", "lastName2");
+            Profile profile = new Profile("This is the profile on which user1 will comment");
+            User user2 = new User(loginid2, name2) { Profile = profile };
+
+            new Comment(user1, user2, "This is what I am going to comment");
+            repository.Save(user2);
+            User interestedUser = null;
+            IList<User> users = session.CreateQuery("from User").List<User>();
+            foreach (User user in users){
+                if (user.LoginId.Value == loginid2.Value){
+                    interestedUser = user;
+                    break;
+                }
+            }
+            if (interestedUser != null){
+                Assert.AreEqual("This is what I am going to comment", interestedUser.GetLatestProfileComment().Content);
+                Assert.AreEqual(user1,interestedUser.GetLatestProfileComment().Commentor);
+            }
+            else{
+                Assert.Fail();
+            }
         }
     }
 }

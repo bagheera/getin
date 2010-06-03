@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
@@ -7,13 +9,14 @@ namespace GetIn
 {
     public class User
     {
-        public User()
-        {
+        public User(){
+            UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
         }
 
         public User(LoginId loginid, Name name)
         {
+            UserProfileComments = new UserProfileComments();
             LoginId = loginid;
             Name = name;
             Friends = new HashedSet<User>();
@@ -24,9 +27,9 @@ namespace GetIn
 
         public virtual IUserRepository Repository { get; set; }
 
-        private int id;
+        public virtual int Id { get; set; }
 
-        public virtual LoginId LoginId { get; set; }
+        public virtual LoginId LoginId { get; private set; }
 
         public virtual Profile Profile { get; set; }
 
@@ -44,9 +47,35 @@ namespace GetIn
 
         public virtual GetInDate DateOfBirth { get; set; }
 
+        public virtual void AddCommentToProfile(Comment comment)
+        {
+            UserProfileComments.Add(comment);
+        }
+        //TODO Add ability to get all comments associated with a profile
+        public virtual Comment GetLatestProfileComment()
+        {
+            return UserProfileComments.GetLastComment();
+        }
+
+        public virtual UserProfileComments UserProfileComments { get; set; }
+        //public virtual ISet<Comment> CommentList { get; set; }
+
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ((User)other).Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+
         public virtual void Register()
         {
-            var usrs = Repository.FindUser(this.LoginId);
+            User usrToChkUnique = new User(this.LoginId,new Name());
+            var usrs = Repository.LookupUsers(usrToChkUnique);
             if (usrs.Count != 0)
             {
                 throw new UserAlreadyExistsException(this);
@@ -56,6 +85,15 @@ namespace GetIn
 
         public virtual void	 AddFriend(User friend){
             Friends.Add	(friend);
+        }
+
+        public virtual IList<User> LookupUsers(){
+            return Repository.LookupUsers(this);
+        }
+
+        public virtual IList<User> LookupUsers(AgeRange ageRange)
+        {
+            return Repository.LookupUsers(this, ageRange);
         }
     }
 
@@ -126,8 +164,9 @@ namespace GetIn
 
     public class LoginId
     {
-        public LoginId()
-        {
+
+        public string Id { get; private set; }
+        public LoginId(){
         }
 
         public LoginId(string id)
@@ -200,5 +239,35 @@ namespace GetIn
         public virtual string City { get; set; }
         public virtual string Country { get; set; }
         public virtual string ZipCode { get; set; }
+    }
+
+    public class UserProfileComments
+    {
+        //private ISet<Comment> listOfComments;
+        public virtual ISet<Comment> List
+        {
+            get; set;
+        }
+
+        public UserProfileComments()
+        {
+            List = new HashedSet<Comment>();
+        }
+
+        public Comment GetLastComment()
+        {
+            return List.LastOrDefault();
+        }
+
+        public void Add(Comment comment)
+        {
+            List.Add(comment);
+        }
+    }
+
+    public class AgeRange
+    {
+        public int From { get; set; }
+        public int To { get; set; }
     }
 }

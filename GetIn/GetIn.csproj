@@ -80,7 +80,7 @@
   <ItemGroup>
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsTest.cs" />
-    <Compile Include="NHibernateInMemoryTestFixtureBase.cs" />
+    <Compile Include="NHibernateFixtureBase.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="ProfileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bigProfile.txt" />
+    <EmbeddedResource Include="Comment.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="MaxProfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
