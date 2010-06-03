@@ -114,6 +114,10 @@ namespace GetIn
         }
 
         public virtual DateTime Value { get; set; }
+
+        public void Subtract(int years){
+            Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
+        }
     }
 
     public class Like
