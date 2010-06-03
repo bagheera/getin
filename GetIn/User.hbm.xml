@@ -5,11 +5,6 @@
       <generator class="native" />
     </id>
 
-    <set name="Friends" table="FriendTable" cascade="save-update">
-      <key column="user_id"/>
-      <many-to-many class="User" column="friend_id"/>
-    </set>
-
     <component name="LoginId">
       <property name="Value" column="user_id" type="String" />
     </component>
@@ -22,7 +17,7 @@
     <component name="Picture">
       <property name="Bytes" column="user_pic" type="Byte[]" />
     </component>
-    
+
     <set name="Likes" cascade="save-update" >
       <key column="user_id"/>
       <one-to-many class="Like"/>
@@ -33,37 +28,42 @@
       <one-to-many class="Dislike"/>
     </set>
 
-    <component name="Gender">               
+    <component name="Gender">
       <property name="Code" column="gender" type="Char" />
     </component>
-
-    <!--<discriminator column="gender" />
-    <property name="Gender" column="gender" type="Gender" />
-
-    <subclass discriminator-value="M" extends="Gender" name="Male" />
-    <subclass discriminator-value="F" extends="Gender" name="Female" />-->
 
     <component name="Location">
       <property name="City" column="loc_city" type="String" />
       <property name="ZipCode" column="loc_zipcode" type="String" />
       <property name="Country" column="loc_country" type="String" />
     </component>
-    
+
     <component name="DateOfBirth">
       <property name="Value" column="dob" type="DateTime" />
     </component>
-        
+
     <component name="Profile" >
       <property name="ProfileText" column="profile" type="String"/>
     </component>
 
     <component name="UserProfileComments">
-    <set name="List" cascade="save-update">
-      <key column="user_commented_on"/>
-      <one-to-many class="Comment"/>
-    </set>
+      <set name="List" cascade="save-update">
+        <key column="user_commented_on"/>
+        <one-to-many class="Comment"/>
+      </set>
     </component>
+
+    <set name="Friends" table="FriendTable" cascade="save-update" lazy="true">
+      <key column="user_id"/>
+      <many-to-many class="User" column="friend_id"/>
+    </set>
+
+    <set name="Inviters" table="InvitationTable" cascade="save-update" lazy="true">
+      <key column="user_id"/>
+      <many-to-many class="User" column="friend_id"/>
+    </set>
   </class>
+
   <class name="Like" table="LikesTable">
     <id name="id" access="field">
       <generator class="native" />
@@ -75,7 +75,7 @@
 
     <property name="Text" column="like_text" type="String" />
   </class>
-  
+
   <class name="Dislike" table="DislikesTable">
     <id name="id" access="field">
       <generator class="native" />
@@ -86,7 +86,6 @@
     </component>
 
     <property name="Text" column="dislike_text" type="String" />
-
 
   </class>
 
