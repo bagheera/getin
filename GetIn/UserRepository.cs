@@ -23,34 +23,34 @@ namespace GetIn
         }
 
         private ICriteria BuildLookupCriteria(User user){
-            ICriteria aQuery = Session.CreateCriteria(typeof(GetIn.User));
+            ICriteria lookupCriteria = Session.CreateCriteria(typeof(GetIn.User));
             if (user.LoginId != null)
             {
-                addRestriction(aQuery, "LoginId", user.LoginId, true);
+                addRestriction(lookupCriteria, "LoginId", user.LoginId, true);
             }
             if (user.Name != null)
             {
-                addRestriction(aQuery, "Name.FirstName", user.Name.FirstName, false);
-                addRestriction(aQuery, "Name.LastName", user.Name.LastName, false);
+                addRestriction(lookupCriteria, "Name.FirstName", user.Name.FirstName, false);
+                addRestriction(lookupCriteria, "Name.LastName", user.Name.LastName, false);
             }
             if (user.Location != null)
             {
-                addRestriction(aQuery, "Location.Country", user.Location.Country, false);
-                addRestriction(aQuery, "Location.City", user.Location.City, false);
-                addRestriction(aQuery, "Location.ZipCode", user.Location.ZipCode, false);
+                addRestriction(lookupCriteria, "Location.Country", user.Location.Country, false);
+                addRestriction(lookupCriteria, "Location.City", user.Location.City, false);
+                addRestriction(lookupCriteria, "Location.ZipCode", user.Location.ZipCode, false);
             }
-            addRestriction(aQuery, "Gender", user.Gender, true);
+            addRestriction(lookupCriteria, "Gender", user.Gender, true);
             if (user.Profile != null && !String.IsNullOrEmpty(user.Profile.ProfileText)){
                 Profile wildCardProfile = new Profile("%" + user.Profile.ProfileText + "%");
-                addRestriction(aQuery, "Profile", wildCardProfile, false);
+                addRestriction(lookupCriteria, "Profile", wildCardProfile, false);
             }
 
-            return aQuery;
+            return lookupCriteria;
         }
 
         public IList<User> LookupUsers(User user){
-            ICriteria aQuery = BuildLookupCriteria(user);
-            return aQuery.List<User>();
+            ICriteria lookupCriteria = BuildLookupCriteria(user);
+            return lookupCriteria.List<User>();
         }
 
         public IList<User> LookupUsers(User user, AgeRange ageRange){

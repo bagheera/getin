@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Iesi.Collections.Generic;
@@ -84,6 +85,15 @@ namespace GetIn
 
         public virtual void	 AddFriend(User friend){
             Friends.Add	(friend);
+        }
+
+        public virtual IList<User> LookupUsers(){
+            return Repository.LookupUsers(this);
+        }
+
+        public virtual IList<User> LookupUsers(AgeRange ageRange)
+        {
+            return Repository.LookupUsers(this, ageRange);
         }
     }
 
