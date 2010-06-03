@@ -50,7 +50,10 @@ namespace GetIn
         {
             UserProfileComments.Add(comment);
         }
-        //TODO Add ability to get all comments associated with a profile
+        
+        public virtual ISet<Comment> GetAllProfileComments(){
+            return UserProfileComments.List;
+        }
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
@@ -245,7 +248,7 @@ namespace GetIn
 
         public Comment GetLastComment()
         {
-            return List.LastOrDefault();
+            return (List.OrderByDescending(p => p.CommentDate)).FirstOrDefault();
         }
 
         public void Add(Comment comment)
