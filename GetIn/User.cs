@@ -148,11 +148,26 @@ namespace GetIn
 
         public virtual DateTime Value { get; set; }
 
-        public override bool Equals(object obj){
-            return this.Value.Equals(((GetInDate) obj).Value);
-        }        
-        public void Subtract(int years){
-            Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
+        public void Subtract(int years)
+        {
+            Value = Value.Subtract(new TimeSpan(365 * years, 0, 0, 0));
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(GetInDate other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other.Value.Equals(Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
         }
     }
 
