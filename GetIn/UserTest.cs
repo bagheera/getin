@@ -15,7 +15,7 @@ namespace GetIn
         [Test]
         public void ShouldBeAbleToCreateANewUserObject()
         {
-            LoginId loginid = new LoginId("test@test.com");
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
             string firstname = "firstName";
             string lastname = "lastName";
             Name name = new Name(firstname, lastname);
@@ -28,7 +28,7 @@ namespace GetIn
         [Test]
         public void ShouldBeAbleToSetUserProperties()
         {
-            LoginId loginid = new LoginId("test@test.com");
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
             string firstname = "firstName";
             string lastname = "lastName";
             Name name = new Name(firstname, lastname);
@@ -65,7 +65,7 @@ namespace GetIn
         public void ShouldBeAbleToRegisterUser()
         {
 
-            LoginId loginid = new LoginId("test@test.com");
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
             string firstname = "firstName";
             string lastname = "lastName";
             Name name = new Name(firstname, lastname);
@@ -114,7 +114,7 @@ namespace GetIn
         public void ShouldNotBeAbleToRegisterUserIfAlreadyExists()
         {
 
-            LoginId loginid = new LoginId("test@test.com");
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
             Name name = new Name("firstName", "lastName");
 
             var likes = new[]
@@ -124,7 +124,7 @@ namespace GetIn
                                    new Like() {UserId = loginid, Text = "Like3"},
                                };
 
-            var dislikes = new []
+            var dislikes = new[]
                                {
                                    new Dislike() {UserId = loginid, Text = "Dislike1"},
                                    new Dislike() {UserId = loginid, Text = "Dislike2"},
@@ -155,15 +155,16 @@ namespace GetIn
         {
             User user1 = new User(new LoginId("123"), null);
             var repositoryMock = new Moq.Mock<IUserRepository>();
-            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> {user1});
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> { user1 });
             user1.Repository = repositoryMock.Object;
             IList<User> lookedupUser = user1.LookupUsers();
-            Assert.AreEqual(1,lookedupUser.Count());
+            Assert.AreEqual(1, lookedupUser.Count());
             repositoryMock.VerifyAll();
         }
 
         [Test]
-        public void ShouldBeAbleToCallUserRepositoryonLookUpUsersWithAgeRestriction(){
+        public void ShouldBeAbleToCallUserRepositoryonLookUpUsersWithAgeRestriction()
+        {
             User user1 = new User(new LoginId("123"), null);
             var repositoryMock = new Moq.Mock<IUserRepository>();
             repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>(), It.IsAny<AgeRange>())).Returns(new List<User> { user1 });
@@ -171,6 +172,67 @@ namespace GetIn
             IList<User> lookedupUser = user1.LookupUsers(new AgeRange());
             Assert.AreEqual(1, lookedupUser.Count());
             repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldBeAbleToInviteFriends()
+        {
+            var loginid = new LoginId("Manish@ThoughtWorks.com");
+            var name = new Name("firstName", "lastName");
+            var manish = new User(loginid, name);
+
+            var loginid2 = new LoginId("Umar@ThoughtWorks.com");
+            var name2 = new Name("firstName2", "lastName2");
+            var umar = new User(loginid2, name2);
+
+            Assert.AreEqual(0, umar.Inviters.Count);
+
+            manish.InviteFriend(umar);
+
+            Assert.AreEqual(1, umar.Inviters.Count);
+            Assert.AreEqual(manish, umar.Inviters.ElementAt(0));
+        }
+        
+        [Test]
+        public void ShouldBeAbleToAcceptInvitation()
+        {
+            var loginid = new LoginId("Manish@ThoughtWorks.com");
+            var name = new Name("Manish", "Manish");
+            var manish = new User(loginid, name);
+
+            var loginid2 = new LoginId("Umar@ThoughtWorks.com");
+            var name2 = new Name("Umar", "Umar");
+            var umar = new User(loginid2, name2);
+
+            manish.InviteFriend(umar);
+
+            Assert.AreEqual(1, umar.Inviters.Count);
+
+            umar.AcceptFriendInvite(manish);
+
+            Assert.IsTrue(!umar.Inviters.Contains(manish));
+            Assert.IsTrue(umar.Friends.Contains(manish));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRejectInvitation()
+        {
+            var loginid = new LoginId("Manish@ThoughtWorks.com");
+            var name = new Name("Manish", "Manish");
+            var manish = new User(loginid, name);
+
+            var loginid2 = new LoginId("Umar@ThoughtWorks.com");
+            var name2 = new Name("Umar", "Umar");
+            var umar = new User(loginid2, name2);
+
+            manish.InviteFriend(umar);
+
+            Assert.AreEqual(1, umar.Inviters.Count);
+
+            umar.RejectFriendInvite(manish);
+
+            Assert.AreEqual(0, umar.Inviters.Count);
+            Assert.IsTrue(!umar.Friends.Contains(manish));
         }
     }
 
@@ -200,90 +262,86 @@ namespace GetIn
         }
 
         [Test]
-        public void ShouldBeAbleToInviteFriends()
+        public void ShouldBeAbleToPersistInvitersOnInvite()
         {
-            var loginid = new LoginId("test@test.com");
-            var name = new Name("firstName", "lastName");
-            var user = new User(loginid, name);
+            IUserRepository repository = new UserRepository(session);
 
-            var loginid2 = new LoginId("test2@test.com");
-            var name2 = new Name("firstName2", "lastName2");
-            var user2 = new User(loginid2, name2);
-
-            session.Save(user2);
-            user.InviteFriend(user2);
-            session.Save(user);
-            session.Flush();
-
-            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='test2@test.com'").List<User>();
-            Assert.AreEqual(1, users[0].Inviters.Count);
-            Assert.AreEqual(user, users[0].Inviters.ElementAt(0));
-
-            var loginid3 = new LoginId("test3@test.com");
-            var name3 = new Name("firstName3", "lastName3");
-            var user3 = new User(loginid3, name3);
-
-            session.Save(user3);
-            user.InviteFriend(user3);
-            session.Save(user);
-            session.Flush();
-
-            users = session.CreateQuery("from User u where u.LoginId.Value='test3@test.com'").List<User>();
-            Assert.AreEqual(1, users[0].Inviters.Count);
-            Assert.AreEqual(user, users[0].Inviters.ElementAt(0));
-        }
-
-        [Test]
-        public void ShouldBeAbleToAcceptFriends()
-        {
             var loginid = new LoginId("Martin@ThoughtWorks.com");
             var name = new Name("Martin", "Fowler");
-            var martin = new User(loginid, name);
+            var martin = new User(loginid, name) { Repository = repository };
 
             var loginid2 = new LoginId("Roy@ThoughtWorks.com");
             var name2 = new Name("Roy", "Singham");
-            var roy = new User(loginid2, name2);
+            var roy = new User(loginid2, name2) { Repository = repository };
 
-            session.Save(roy);
+            repository.Save(roy);
+            repository.Save(martin);
+
             martin.InviteFriend(roy);
-            session.Save(martin);
+            
             session.Flush();
+            session.Evict(martin);
+            session.Evict(roy);
 
-            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
-            Assert.AreEqual(1, users[0].Inviters.Count);
-            Assert.AreEqual(martin, users[0].Inviters.ElementAt(0));
+            IList<User> users = repository.LookupUsers(roy);
+            Assert.IsTrue(users[0].Inviters.Contains(martin));
+        }
+
+        [Test]
+        public void ShouldBeAbleToPersistInvitersAndFriendsOnAcceptInvite()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("Martin@ThoughtWorks.com");
+            var name = new Name("Martin", "Fowler");
+            var martin = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("Roy@ThoughtWorks.com");
+            var name2 = new Name("Roy", "Singham");
+            var roy = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(roy);
+            repository.Save(martin);
+
+            martin.InviteFriend(roy);
 
             roy.AcceptFriendInvite(martin);
 
-            users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
-            Assert.AreEqual(0, users[0].Inviters.Count);
+            session.Flush();
+            session.Evict(martin);
+            session.Evict(roy);
+
+            IList<User> users = repository.LookupUsers(roy);
+            Assert.IsTrue(!users[0].Inviters.Contains(martin));
             Assert.IsTrue(users[0].Friends.Contains(martin));
         }
 
         [Test]
-        public void ShouldBeAbleToRejectFriends()
+        public void ShouldBeAbleToPersistInvitersAndFriendsOnRejectInvite()
         {
+            IUserRepository repository = new UserRepository(session);
+
             var loginid = new LoginId("Martin@ThoughtWorks.com");
             var name = new Name("Martin", "Fowler");
-            var martin = new User(loginid, name);
+            var martin = new User(loginid, name) { Repository = repository };
 
             var loginid2 = new LoginId("Roy@ThoughtWorks.com");
             var name2 = new Name("Roy", "Singham");
-            var roy = new User(loginid2, name2);
+            var roy = new User(loginid2, name2) { Repository = repository };
 
-            session.Save(roy);
+            repository.Save(roy);
+            repository.Save(martin);
+
             martin.InviteFriend(roy);
-            session.Save(martin);
-            session.Flush();
-
-            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
-            Assert.AreEqual(1, users[0].Inviters.Count);
-            Assert.AreEqual(martin, users[0].Inviters.ElementAt(0));
 
             roy.RejectFriendInvite(martin);
 
-            users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
-            Assert.AreEqual(0, users[0].Inviters.Count);
+            session.Flush();
+            session.Evict(martin);
+            session.Evict(roy);
+
+            IList<User> users = repository.LookupUsers(roy);
+            Assert.IsTrue(!users[0].Inviters.Contains(martin));
             Assert.IsTrue(!users[0].Friends.Contains(martin));
         }
 
@@ -291,7 +349,7 @@ namespace GetIn
         public void ShouldBeAbleToRegisterUser()
         {
 
-            LoginId loginid = new LoginId("test@test.com");
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
             string firstname = "firstName";
             string lastname = "lastName";
             Name name = new Name(firstname, lastname);

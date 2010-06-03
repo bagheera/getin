@@ -76,12 +76,12 @@ namespace GetIn
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.LoginId, LoginId);
+            return Equals(other.Id, Id);
         }
 
         public override int GetHashCode()
         {
-            return (LoginId != null ? LoginId.GetHashCode() : 0);
+            return Id.GetHashCode();
         }
 
         public virtual void Register()

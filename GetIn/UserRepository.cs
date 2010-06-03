@@ -16,7 +16,6 @@ namespace GetIn
         public void Save(User user)
         {
             Session.Save(user);
-            Session.Flush();
         }
 
         private ICriteria BuildLookupCriteria(User user){
@@ -86,6 +85,5 @@ namespace GetIn
         void Save(User user);
         IList<User> LookupUsers(User user);
         IList<User> LookupUsers(User user,AgeRange ageRange);
-
     }
 }
