@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Iesi.Collections.Generic;
@@ -76,7 +77,8 @@ namespace GetIn
 
         public virtual void Register()
         {
-            var usrs = Repository.FindUser(this.LoginId);
+            User usrToChkUnique = new User(this.LoginId,new Name());
+            var usrs = Repository.LookupUsers(usrToChkUnique);
             if (usrs.Count != 0)
             {
                 throw new UserAlreadyExistsException(this);
@@ -86,6 +88,15 @@ namespace GetIn
 
         public virtual void	 AddFriend(User friend){
             Friends.Add	(friend);
+        }
+
+        public virtual IList<User> LookupUsers(){
+            return Repository.LookupUsers(this);
+        }
+
+        public virtual IList<User> LookupUsers(AgeRange ageRange)
+        {
+            return Repository.LookupUsers(this, ageRange);
         }
     }
 
@@ -106,6 +117,11 @@ namespace GetIn
         }
 
         public virtual DateTime Value { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return this.Value.Equals(((GetInDate) obj).Value);
+        }
     }
 
     public class Like
@@ -255,5 +271,11 @@ namespace GetIn
         {
             List.Add(comment);
         }
+    }
+
+    public class AgeRange
+    {
+        public int From { get; set; }
+        public int To { get; set; }
     }
 }

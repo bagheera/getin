@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Iesi.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Drawing;
@@ -100,7 +101,7 @@ namespace GetIn
 
 
             var repositoryMock = new Moq.Mock<IUserRepository>();
-            repositoryMock.Setup(p => p.FindUser(loginid)).Returns(new List<User>());
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User>());
             repositoryMock.Setup(p => p.Save(user));
 
             user.Repository = repositoryMock.Object;
@@ -146,34 +147,58 @@ namespace GetIn
             };
 
             var repositoryMock = new Moq.Mock<IUserRepository>();
-            repositoryMock.Setup(p => p.FindUser(loginid)).Returns(new List<User>{user});
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> { user });
             user.Repository = repositoryMock.Object;
             Assert.Throws(typeof(UserAlreadyExistsException), user.Register);
             repositoryMock.VerifyAll();
         }
 
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryOnLookupUsers()
+        {
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> {user1});
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers();
+            Assert.AreEqual(1,lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryonLookUpUsersWithAgeRestriction(){
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>(), It.IsAny<AgeRange>())).Returns(new List<User> { user1 });
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers(new AgeRange());
+            Assert.AreEqual(1, lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
     }
 
     [TestFixture]
-    public class UserRepositoryMappingTest : NHibernateInMemoryTestFixtureBase
+    public class UserRepositoryMappingTest : NHibernateFixtureBase
     {
         private ISession session;
 
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            InitalizeSessionFactory(new FileInfo("User.hbm.xml"));
+            InitalizeSessionFactory(new FileInfo("User.hbm.xml"), new FileInfo("Comment.hbm.xml"));
         }
 
         [SetUp]
         public void SetUp()
         {
             session = this.CreateSession();
+            session.BeginTransaction();
         }
 
         [TearDown]
         public void TearDown()
         {
+            session.Transaction.Rollback();
             session.Dispose();
         }
 
@@ -252,7 +277,7 @@ namespace GetIn
             repository.Save(user);
             session.Evict(user);
 
-            var savedUser=repository.FindUser(loginid)[0];
+            User savedUser=repository.LookupUsers(user)[0];
             
 
             Assert.AreEqual(savedUser.LoginId,user.LoginId);

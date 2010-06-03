@@ -14,6 +14,13 @@ namespace GetIn{
             CommentedOn.AddCommentToProfile(this);
             CommentDate = new GetInDate(DateTime.Now);
         }
+        public Comment(User commentor, User commentedOn, String content, GetInDate myDate){
+            Commentor = commentor;
+            CommentedOn = commentedOn;
+            Content = content;
+            CommentedOn.AddCommentToProfile(this);
+            CommentDate = myDate;
+        }
 
         public virtual User Commentor { get; set; }
         public virtual User CommentedOn { get; set; }

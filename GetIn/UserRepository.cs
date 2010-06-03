@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 
 namespace GetIn
 {
@@ -21,28 +22,62 @@ namespace GetIn
             Session.Flush();
         }
 
-        public IList<User> FindUser(LoginId loginId)
-        {
-            IQuery qry = Session.CreateQuery("from User u where u.LoginId.Value = :param1").SetString("param1", loginId.Value);
-            IList<User> usrs = qry.List<User>();
-            return usrs;
+        private ICriteria BuildLookupCriteria(User user){
+            ICriteria lookupCriteria = Session.CreateCriteria(typeof(GetIn.User));
+            if (user.LoginId != null)
+            {
+                addRestriction(lookupCriteria, "LoginId", user.LoginId, true);
+            }
+            if (user.Name != null)
+            {
+                addRestriction(lookupCriteria, "Name.FirstName", user.Name.FirstName, false);
+                addRestriction(lookupCriteria, "Name.LastName", user.Name.LastName, false);
+            }
+            if (user.Location != null)
+            {
+                addRestriction(lookupCriteria, "Location.Country", user.Location.Country, false);
+                addRestriction(lookupCriteria, "Location.City", user.Location.City, false);
+                addRestriction(lookupCriteria, "Location.ZipCode", user.Location.ZipCode, false);
+            }
+            addRestriction(lookupCriteria, "Gender", user.Gender, true);
+            if (user.Profile != null && !String.IsNullOrEmpty(user.Profile.ProfileText)){
+                Profile wildCardProfile = new Profile("%" + user.Profile.ProfileText + "%");
+                addRestriction(lookupCriteria, "Profile", wildCardProfile, false);
+            }
+
+            return lookupCriteria;
         }
 
         public IList<User> LookupUsers(User user){
-            if (user.Name != null && user.Name.FirstName != null){
-                Session.EnableFilter("FirstNameFilter").SetParameter("firstName", user.Name.FirstName);
-            } else{
-                Session.DisableFilter("FirstNameFilter");
-            }
-            if (user.Name != null && user.Name.LastName != null){
-                Session.EnableFilter("LastNameFilter").SetParameter("lastName", user.Name.LastName);
-            } else{
-                Session.DisableFilter("LastNameFilter");
-            }
-            IQuery query = Session.CreateQuery("from User");
-            return query.List<User>();
+            ICriteria lookupCriteria = BuildLookupCriteria(user);
+            return lookupCriteria.List<User>();
         }
 
+        public IList<User> LookupUsers(User user, AgeRange ageRange){
+            ICriteria aQuery = BuildLookupCriteria(user);
+            if(ageRange != null){
+                DateTime fromYear = DateTime.Now.Subtract(new TimeSpan(365*ageRange.To,0,0,0));
+                DateTime toYear = DateTime.Now.Subtract(new TimeSpan(365*ageRange.From,0,0,0));
+                aQuery.Add(Expression.Between("DateOfBirth", new GetInDate(fromYear), new GetInDate(toYear)));
+
+                //Year - ageRange.From;
+//                int toYear = DateTime.Now.Year - ageRange.To;
+
+//                aQuery.Add(Expression.Between("(day(current_date()) - day(DateOfBirth.Value) )", ageRange.From, ageRange.To));
+                //aQuery.Add()
+            }
+            return aQuery.List<User>();
+        }
+
+        private void addRestriction(ICriteria criteria, String type, Object value,Boolean exactMatch){
+            if (criteria != null && type != null && value != null){
+                if (exactMatch){
+                    criteria.Add(Expression.Eq(type, value));
+                } else{
+                    criteria.Add(Expression.Like(type, value));
+                }
+            }
+        }
     }
 
     public class UserAlreadyExistsException : Exception
@@ -56,7 +91,8 @@ namespace GetIn
     public interface IUserRepository
     {
         void Save(User user);
-        IList<User> FindUser(LoginId loginId);
         IList<User> LookupUsers(User user);
+        IList<User> LookupUsers(User user,AgeRange ageRange);
+
     }
 }
