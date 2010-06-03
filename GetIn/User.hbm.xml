@@ -37,12 +37,6 @@
       <property name="Code" column="gender" type="Char" />
     </component>
 
-    <!--<discriminator column="gender" />
-    <property name="Gender" column="gender" type="Gender" />
-
-    <subclass discriminator-value="M" extends="Gender" name="Male" />
-    <subclass discriminator-value="F" extends="Gender" name="Female" />-->
-
     <component name="Location">
       <property name="City" column="loc_city" type="String" />
       <property name="ZipCode" column="loc_zipcode" type="String" />
