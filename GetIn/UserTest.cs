@@ -384,6 +384,8 @@ namespace GetIn
                                 Repository = repository
                             };
             repository.Save(user);
+
+            session.Flush();
             session.Evict(user);
 
             User savedUser = repository.LookupUsers(user)[0];
