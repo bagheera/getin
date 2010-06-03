@@ -53,10 +53,8 @@ namespace GetIn
         public IList<User> LookupUsers(User user, AgeRange ageRange){
             var lookupCriteria = BuildLookupCriteria(user);
             if(ageRange != null){
-                var beginDate = new GetInDate(DateTime.Now);
-                beginDate.Subtract(ageRange.To);
-                var endDate = new GetInDate(DateTime.Now);
-                endDate.Subtract(ageRange.From);
+                var beginDate = new GetInDate(DateTime.Now).Subtract(ageRange.To);
+                var endDate = new GetInDate(DateTime.Now).Subtract(ageRange.From);
                 lookupCriteria.Add(Restrictions.Between("DateOfBirth", beginDate, endDate));
             }
             return lookupCriteria.List<User>();
