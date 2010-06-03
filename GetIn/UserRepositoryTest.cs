@@ -25,12 +25,14 @@ namespace GetIn
         public void SetUp()
         {
             session = this.CreateSession();
+            session.BeginTransaction();
             usrRep = new UserRepository(session);
             LookUsersSetUp();
         }
 
         [TearDown]
         public void TearDown(){
+            session.Transaction.Rollback();
             session.Dispose();
         }
 
