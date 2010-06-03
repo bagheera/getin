@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
@@ -56,13 +55,13 @@ namespace GetIn
         public virtual ISet<Comment> GetAllProfileComments(){
             return UserProfileComments.List;
         }
+
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
         }
 
         public virtual UserProfileComments UserProfileComments { get; set; }
-        //public virtual ISet<Comment> CommentList { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -86,7 +85,7 @@ namespace GetIn
 
         public virtual void Register()
         {
-            User usrToChkUnique = new User(this.LoginId,new Name());
+            var usrToChkUnique = new User(this.LoginId,new Name());
             var usrs = Repository.LookupUsers(usrToChkUnique);
             if (usrs.Count != 0)
             {
@@ -148,9 +147,8 @@ namespace GetIn
 
         public virtual DateTime Value { get; set; }
 
-        public void Subtract(int years)
-        {
-            Value = Value.Subtract(new TimeSpan(365 * years, 0, 0, 0));
+        public GetInDate Subtract(int years){
+            return new GetInDate(Value.Subtract(new TimeSpan(365*years, 0, 0, 0)));
         }
 
         public override bool Equals(object obj)
@@ -204,7 +202,7 @@ namespace GetIn
         {
             if (obj is Name)
             {
-                Name name = obj as Name;
+                var name = obj as Name;
                 return name.FirstName.Equals(this.FirstName, StringComparison.OrdinalIgnoreCase) &&
                        name.LastName.Equals(this.LastName, StringComparison.OrdinalIgnoreCase);
             }
@@ -237,6 +235,7 @@ namespace GetIn
                 return (obj as LoginId).Value == this.Value;
             return base.Equals(obj);
         }
+
         public override int GetHashCode()
         {
             return this.Value.GetHashCode();
@@ -298,7 +297,6 @@ namespace GetIn
 
     public class UserProfileComments
     {
-        //private ISet<Comment> listOfComments;
         public virtual ISet<Comment> List
         {
             get; set;
@@ -311,7 +309,7 @@ namespace GetIn
 
         public Comment GetLastComment()
         {
-            return (List.OrderByDescending(p => p.CommentDate)).FirstOrDefault();
+            return (List.OrderByDescending(p => p.CommentDate.Value)).FirstOrDefault();
         }
 
         public void Add(Comment comment)
