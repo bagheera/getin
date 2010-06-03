@@ -31,7 +31,7 @@
     </nunit2>
   </target>
   
-   <target name="build" depends="compile, test" />
+   <target name="build" depends="create.database,compile, test" />
    <target name="test.on.cruise" depends="create.database, test" />
   
   <target name="create.database" depends="delete.database" >

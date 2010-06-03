@@ -156,7 +156,7 @@ namespace GetIn
     }
 
     [TestFixture]
-    public class UserRepositoryMappingTest : NHibernateInMemoryTestFixtureBase
+    public class UserRepositoryMappingTest : NHibernateFixtureBase
     {
         private ISession session;
 
