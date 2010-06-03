@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Iesi.Collections.Generic;
@@ -51,7 +52,10 @@ namespace GetIn
         {
             UserProfileComments.Add(comment);
         }
-        //TODO Add ability to get all comments associated with a profile
+        
+        public virtual ISet<Comment> GetAllProfileComments(){
+            return UserProfileComments.List;
+        }
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
@@ -115,6 +119,15 @@ namespace GetIn
                 Inviters.Remove(u);
             }
         }
+
+        public virtual IList<User> LookupUsers(){
+            return Repository.LookupUsers(this);
+        }
+
+        public virtual IList<User> LookupUsers(AgeRange ageRange)
+        {
+            return Repository.LookupUsers(this, ageRange);
+        }
     }
 
     public class Photo
@@ -134,6 +147,13 @@ namespace GetIn
         }
 
         public virtual DateTime Value { get; set; }
+
+        public override bool Equals(object obj){
+            return this.Value.Equals(((GetInDate) obj).Value);
+        }        
+        public void Subtract(int years){
+            Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
+        }
     }
 
     public class Like
@@ -276,7 +296,7 @@ namespace GetIn
 
         public Comment GetLastComment()
         {
-            return List.LastOrDefault();
+            return (List.OrderByDescending(p => p.CommentDate)).FirstOrDefault();
         }
 
         public void Add(Comment comment)

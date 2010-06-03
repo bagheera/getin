@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Iesi.Collections.Generic;
+using Moq;
 using NHibernate;
 using NUnit.Framework;
 
 namespace GetIn
 {
     [TestFixture]
-    public class CommentsTest : NHibernateInMemoryTestFixtureBase
+    public class CommentsTest : NHibernateFixtureBase
     {
         private ISession session;
 
@@ -23,12 +24,14 @@ namespace GetIn
         [SetUp]
         public void SetUp()
         {
-                session = CreateSession();
+            session = CreateSession();
+            session.BeginTransaction();
         }
 
         [TearDown]
         public void TearDown()
         {
+            session.Transaction.Rollback();
             session.Dispose();
         }
     
@@ -85,5 +88,16 @@ namespace GetIn
                 Assert.Fail();
             }
         }
+
+//        [Test]
+//        public void ShouldBeAbleToGetTheLatestComment(){
+//            LoginId loginid1 = new LoginId("testlatestcomments@test.com");
+//            Name name1 = new Name("firstName1", "lastName1");
+//            User user1 = new User(loginid1, name1);
+//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the first comment",new GetInDate(new DateTime(2010,01,01))));
+//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the second comment",new GetInDate(new DateTime(2010,02,03))));
+//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the third comment",new GetInDate(new DateTime(2010,01,02))));
+//            Assert.AreEqual("This is the second comment",user1.GetLatestProfileComment().Content);
+//        }
     }
 }

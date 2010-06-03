@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace GetIn
 {
     [TestFixture]
-    public class ProfileTest : NHibernateInMemoryTestFixtureBase
+    public class ProfileTest : NHibernateFixtureBase
     {
         private ISession session;
 
@@ -21,12 +21,15 @@ namespace GetIn
         [SetUp]
         public void SetUp()
         {
-                session = CreateSession();
+            session = CreateSession();
+            session.BeginTransaction();
+
         }
 
         [TearDown]
         public void TearDown()
         {
+            session.Transaction.Rollback();
             session.Dispose();
         }
     

@@ -115,25 +115,22 @@ namespace GetIn
         {
 
             LoginId loginid = new LoginId("test@test.com");
-            string firstname = "firstName";
-            string lastname = "lastName";
-            Name name = new Name(firstname, lastname);
+            Name name = new Name("firstName", "lastName");
 
-            Like[] likes = new Like[]
+            var likes = new[]
                                {
                                    new Like() {UserId = loginid, Text = "Like1"},
                                    new Like() {UserId = loginid, Text = "Like2"},
                                    new Like() {UserId = loginid, Text = "Like3"},
                                };
 
-            Dislike[] dlikes = new Dislike[]
+            var dislikes = new []
                                {
                                    new Dislike() {UserId = loginid, Text = "Dislike1"},
                                    new Dislike() {UserId = loginid, Text = "Dislike2"},
                                    new Dislike() {UserId = loginid, Text = "Dislike3"},
                                };
 
-            Image image = new Bitmap(1, 1);
 
             User user = new User(loginid, name)
             {
@@ -141,7 +138,7 @@ namespace GetIn
                 Location = new Location { City = "Banglore" },
                 Gender = new Gender(),
                 Likes = new HashedSet<Like>(likes),
-                Dislikes = new HashedSet<Dislike>(dlikes),
+                Dislikes = new HashedSet<Dislike>(dislikes),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile")
             };
@@ -153,10 +150,32 @@ namespace GetIn
             repositoryMock.VerifyAll();
         }
 
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryOnLookupUsers()
+        {
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> {user1});
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers();
+            Assert.AreEqual(1,lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryonLookUpUsersWithAgeRestriction(){
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>(), It.IsAny<AgeRange>())).Returns(new List<User> { user1 });
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers(new AgeRange());
+            Assert.AreEqual(1, lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
     }
 
     [TestFixture]
-    public class UserRepositoryMappingTest : NHibernateInMemoryTestFixtureBase
+    public class UserRepositoryMappingTest : NHibernateFixtureBase
     {
         private ISession session;
 
@@ -337,5 +356,6 @@ namespace GetIn
 
             Assert.AreEqual(savedUser.Gender.Code, user.Gender.Code);
         }
+
     }
 }

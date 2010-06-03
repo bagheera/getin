@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace GetIn
 {
     [TestFixture]
-    public class UserRepositoryTest : NHibernateInMemoryTestFixtureBase {
+    public class UserRepositoryTest : NHibernateFixtureBase {
 
         private ISession session;
         private IUserRepository usrRep;
@@ -25,12 +25,14 @@ namespace GetIn
         public void SetUp()
         {
             session = this.CreateSession();
+            session.BeginTransaction();
             usrRep = new UserRepository(session);
             LookUsersSetUp();
         }
 
         [TearDown]
         public void TearDown(){
+            session.Transaction.Rollback();
             session.Dispose();
         }
 
