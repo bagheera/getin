@@ -200,37 +200,91 @@ namespace GetIn
         }
 
         [Test]
-        public void ShouldBeAbleToCreateFriends(){
-
+        public void ShouldBeAbleToInviteFriends()
+        {
             var loginid = new LoginId("test@test.com");
             var name = new Name("firstName", "lastName");
             var user = new User(loginid, name);
-        
+
             var loginid2 = new LoginId("test2@test.com");
             var name2 = new Name("firstName2", "lastName2");
             var user2 = new User(loginid2, name2);
-            
+
             session.Save(user2);
-            
-            user.AddFriend(user2);
+            user.InviteFriend(user2);
             session.Save(user);
-            
             session.Flush();
 
-            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='test@test.com'").List<User>();
-            Assert.AreEqual(1,users[0].Friends.Count);
+            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='test2@test.com'").List<User>();
+            Assert.AreEqual(1, users[0].Inviters.Count);
+            Assert.AreEqual(user, users[0].Inviters.ElementAt(0));
 
             var loginid3 = new LoginId("test3@test.com");
             var name3 = new Name("firstName3", "lastName3");
             var user3 = new User(loginid3, name3);
-            user.AddFriend(user3);
-            session.Save(user);
 
+            session.Save(user3);
+            user.InviteFriend(user3);
+            session.Save(user);
             session.Flush();
 
-            users = session.CreateQuery("from User u where u.LoginId.Value='test@test.com'").List<User>();
-            Assert.AreEqual(2, users[0].Friends.Count);
-        
+            users = session.CreateQuery("from User u where u.LoginId.Value='test3@test.com'").List<User>();
+            Assert.AreEqual(1, users[0].Inviters.Count);
+            Assert.AreEqual(user, users[0].Inviters.ElementAt(0));
+        }
+
+        [Test]
+        public void ShouldBeAbleToAcceptFriends()
+        {
+            var loginid = new LoginId("Martin@ThoughtWorks.com");
+            var name = new Name("Martin", "Fowler");
+            var martin = new User(loginid, name);
+
+            var loginid2 = new LoginId("Roy@ThoughtWorks.com");
+            var name2 = new Name("Roy", "Singham");
+            var roy = new User(loginid2, name2);
+
+            session.Save(roy);
+            martin.InviteFriend(roy);
+            session.Save(martin);
+            session.Flush();
+
+            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
+            Assert.AreEqual(1, users[0].Inviters.Count);
+            Assert.AreEqual(martin, users[0].Inviters.ElementAt(0));
+
+            roy.AcceptFriendInvite(martin);
+
+            users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
+            Assert.AreEqual(0, users[0].Inviters.Count);
+            Assert.IsTrue(users[0].Friends.Contains(martin));
+        }
+
+        [Test]
+        public void ShouldBeAbleToRejectFriends()
+        {
+            var loginid = new LoginId("Martin@ThoughtWorks.com");
+            var name = new Name("Martin", "Fowler");
+            var martin = new User(loginid, name);
+
+            var loginid2 = new LoginId("Roy@ThoughtWorks.com");
+            var name2 = new Name("Roy", "Singham");
+            var roy = new User(loginid2, name2);
+
+            session.Save(roy);
+            martin.InviteFriend(roy);
+            session.Save(martin);
+            session.Flush();
+
+            IList<User> users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
+            Assert.AreEqual(1, users[0].Inviters.Count);
+            Assert.AreEqual(martin, users[0].Inviters.ElementAt(0));
+
+            roy.RejectFriendInvite(martin);
+
+            users = session.CreateQuery("from User u where u.LoginId.Value='Roy@ThoughtWorks.com'").List<User>();
+            Assert.AreEqual(0, users[0].Inviters.Count);
+            Assert.IsTrue(!users[0].Friends.Contains(martin));
         }
 
         [Test]
@@ -274,17 +328,17 @@ namespace GetIn
             repository.Save(user);
             session.Evict(user);
 
-            User savedUser=repository.LookupUsers(user)[0];
-            
+            User savedUser = repository.LookupUsers(user)[0];
 
-            Assert.AreEqual(savedUser.LoginId,user.LoginId);
+
+            Assert.AreEqual(savedUser.LoginId, user.LoginId);
             Assert.AreEqual(savedUser.Location.City, user.Location.City);
             Assert.AreEqual(savedUser.Location.Country, user.Location.Country);
             Assert.AreEqual(savedUser.DateOfBirth.Value, user.DateOfBirth.Value);
             Assert.AreEqual(savedUser.Picture.Bytes.Length, user.Picture.Bytes.Length);
             for (int i = 0; i < savedUser.Picture.Bytes.Length; i++)
                 Assert.AreEqual(savedUser.Picture.Bytes[i], user.Picture.Bytes[i]);
-            
+
             Assert.AreEqual(savedUser.Likes.Count, user.Likes.Count);
             var arraylikes1 = savedUser.Likes.ToArray();
             var arraylikes2 = user.Likes.ToArray();

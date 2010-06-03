@@ -9,21 +9,22 @@ namespace GetIn
 {
     public class User
     {
-        public User(){
-            UserProfileComments = new UserProfileComments();
-            Friends = new HashedSet<User>();
-        }
-
-        public User(LoginId loginid, Name name)
+        public User()
         {
             UserProfileComments = new UserProfileComments();
-            LoginId = loginid;
-            Name = name;
             Friends = new HashedSet<User>();
+            Inviters = new HashedSet<User>();
         }
 
+        public User(LoginId loginid, Name name) : this()
+        {
+            LoginId = loginid;
+            Name = name;
+        }
 
         public virtual ISet<User> Friends { get; set; }
+
+        public virtual ISet<User> Inviters { get; set; }
 
         public virtual IUserRepository Repository { get; set; }
 
@@ -51,7 +52,10 @@ namespace GetIn
         {
             UserProfileComments.Add(comment);
         }
-        //TODO Add ability to get all comments associated with a profile
+        
+        public virtual ISet<Comment> GetAllProfileComments(){
+            return UserProfileComments.List;
+        }
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
@@ -60,16 +64,24 @@ namespace GetIn
         public virtual UserProfileComments UserProfileComments { get; set; }
         //public virtual ISet<Comment> CommentList { get; set; }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (User)) return false;
+            return Equals((User) obj);
+        }
+
+        public virtual bool Equals(User other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return ((User)other).Id == Id;
+            return Equals(other.LoginId, LoginId);
         }
 
         public override int GetHashCode()
         {
-            return Id;
+            return (LoginId != null ? LoginId.GetHashCode() : 0);
         }
 
         public virtual void Register()
@@ -83,8 +95,29 @@ namespace GetIn
             Repository.Save(this);
         }
 
-        public virtual void	 AddFriend(User friend){
-            Friends.Add	(friend);
+        public virtual void	InviteFriend(User u)
+        {
+            if (!Friends.Contains(u))
+            {
+                u.Inviters.Add(this);
+            }
+        }
+
+        public virtual void AcceptFriendInvite(User u)
+        {
+            if (Inviters.Contains(u))
+            {
+                Friends.Add(u);
+                Inviters.Remove(u);
+            }
+        }
+
+        public virtual void RejectFriendInvite(User u)
+        {
+            if (Inviters.Contains(u))
+            {
+                Inviters.Remove(u);
+            }
         }
 
         public virtual IList<User> LookupUsers(){
@@ -117,6 +150,23 @@ namespace GetIn
 
         public GetInDate Subtract(int years){
             return new GetInDate(Value.Subtract(new TimeSpan(365*years, 0, 0, 0)));
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public bool Equals(GetInDate other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other.Value.Equals(Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
         }
     }
 
@@ -260,7 +310,7 @@ namespace GetIn
 
         public Comment GetLastComment()
         {
-            return List.LastOrDefault();
+            return (List.OrderByDescending(p => p.CommentDate)).FirstOrDefault();
         }
 
         public void Add(Comment comment)
