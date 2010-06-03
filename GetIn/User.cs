@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
@@ -86,7 +85,7 @@ namespace GetIn
 
         public virtual void Register()
         {
-            User usrToChkUnique = new User(this.LoginId,new Name());
+            var usrToChkUnique = new User(this.LoginId,new Name());
             var usrs = Repository.LookupUsers(usrToChkUnique);
             if (usrs.Count != 0)
             {
@@ -203,7 +202,7 @@ namespace GetIn
         {
             if (obj is Name)
             {
-                Name name = obj as Name;
+                var name = obj as Name;
                 return name.FirstName.Equals(this.FirstName, StringComparison.OrdinalIgnoreCase) &&
                        name.LastName.Equals(this.LastName, StringComparison.OrdinalIgnoreCase);
             }

@@ -34,5 +34,10 @@ namespace GetIn{
             }
             return false;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
