@@ -153,6 +153,28 @@ namespace GetIn
             repositoryMock.VerifyAll();
         }
 
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryOnLookupUsers()
+        {
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>())).Returns(new List<User> {user1});
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers();
+            Assert.AreEqual(1,lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldBeAbleToCallUserRepositoryonLookUpUsersWithAgeRestriction(){
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.LookupUsers(It.IsAny<User>(), It.IsAny<AgeRange>())).Returns(new List<User> { user1 });
+            user1.Repository = repositoryMock.Object;
+            IList<User> lookedupUser = user1.LookupUsers(new AgeRange());
+            Assert.AreEqual(1, lookedupUser.Count());
+            repositoryMock.VerifyAll();
+        }
     }
 
     [TestFixture]
@@ -170,11 +192,13 @@ namespace GetIn
         public void SetUp()
         {
             session = this.CreateSession();
+            session.BeginTransaction();
         }
 
         [TearDown]
         public void TearDown()
         {
+            session.Transaction.Rollback();
             session.Dispose();
         }
 
