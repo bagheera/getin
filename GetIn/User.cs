@@ -118,9 +118,11 @@ namespace GetIn
 
         public virtual DateTime Value { get; set; }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj){
             return this.Value.Equals(((GetInDate) obj).Value);
+        }        
+        public void Subtract(int years){
+            Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
         }
     }
 

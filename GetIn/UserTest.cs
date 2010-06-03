@@ -115,25 +115,22 @@ namespace GetIn
         {
 
             LoginId loginid = new LoginId("test@test.com");
-            string firstname = "firstName";
-            string lastname = "lastName";
-            Name name = new Name(firstname, lastname);
+            Name name = new Name("firstName", "lastName");
 
-            Like[] likes = new Like[]
+            var likes = new[]
                                {
                                    new Like() {UserId = loginid, Text = "Like1"},
                                    new Like() {UserId = loginid, Text = "Like2"},
                                    new Like() {UserId = loginid, Text = "Like3"},
                                };
 
-            Dislike[] dlikes = new Dislike[]
+            var dislikes = new []
                                {
                                    new Dislike() {UserId = loginid, Text = "Dislike1"},
                                    new Dislike() {UserId = loginid, Text = "Dislike2"},
                                    new Dislike() {UserId = loginid, Text = "Dislike3"},
                                };
 
-            Image image = new Bitmap(1, 1);
 
             User user = new User(loginid, name)
             {
@@ -141,7 +138,7 @@ namespace GetIn
                 Location = new Location { City = "Banglore" },
                 Gender = new Gender(),
                 Likes = new HashedSet<Like>(likes),
-                Dislikes = new HashedSet<Dislike>(dlikes),
+                Dislikes = new HashedSet<Dislike>(dislikes),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile")
             };
@@ -305,5 +302,6 @@ namespace GetIn
 
             Assert.AreEqual(savedUser.Gender.Code, user.Gender.Code);
         }
+
     }
 }
