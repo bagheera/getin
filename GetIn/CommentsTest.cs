@@ -89,15 +89,27 @@ namespace GetIn
             }
         }
 
-//        [Test]
-//        public void ShouldBeAbleToGetTheLatestComment(){
-//            LoginId loginid1 = new LoginId("testlatestcomments@test.com");
-//            Name name1 = new Name("firstName1", "lastName1");
-//            User user1 = new User(loginid1, name1);
-//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the first comment",new GetInDate(new DateTime(2010,01,01))));
-//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the second comment",new GetInDate(new DateTime(2010,02,03))));
-//            user1.AddCommentToProfile(new Comment(user1,user1,"This is the third comment",new GetInDate(new DateTime(2010,01,02))));
-//            Assert.AreEqual("This is the second comment",user1.GetLatestProfileComment().Content);
-//        }
+        [Test]
+        public void ShouldBeAbleToGetTheLatestComment(){
+            LoginId loginid1 = new LoginId("testlatestcomments@test.com");
+            Name name1 = new Name("firstName1", "lastName1");
+            User user1 = new User(loginid1, name1);
+            user1.AddCommentToProfile(new Comment(user1,user1,"This is the first comment",new GetInDate(new DateTime(2010,01,01))));
+            user1.AddCommentToProfile(new Comment(user1,user1,"This is the second comment",new GetInDate(new DateTime(2010,02,03))));
+            user1.AddCommentToProfile(new Comment(user1,user1,"This is the third comment",new GetInDate(new DateTime(2010,01,02))));
+            Assert.AreEqual("This is the second comment",user1.GetLatestProfileComment().Content);
+        }
+
+        [Test]
+        public void ShouldBeAbleToGetAllCommentsOnAProfile(){
+            LoginId loginid1 = new LoginId("testlatestcomments@test.com");
+            Name name1 = new Name("firstName1", "lastName1");
+            User user1 = new User(loginid1, name1);
+            user1.AddCommentToProfile(new Comment(user1, user1, "This is the first comment", new GetInDate(new DateTime(2010, 01, 01))));
+            user1.AddCommentToProfile(new Comment(user1, user1, "This is the second comment", new GetInDate(new DateTime(2010, 02, 03))));
+            user1.AddCommentToProfile(new Comment(user1, user1, "This is the third comment", new GetInDate(new DateTime(2010, 01, 02))));
+            user1.AddCommentToProfile(new Comment(user1, user1, "This is the fourth comment", new GetInDate(new DateTime(2010, 04, 02))));
+            Assert.AreEqual(4, user1.GetAllProfileComments().Count);
+        }
     }
 }

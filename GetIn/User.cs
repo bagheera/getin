@@ -55,13 +55,13 @@ namespace GetIn
         public virtual ISet<Comment> GetAllProfileComments(){
             return UserProfileComments.List;
         }
+
         public virtual Comment GetLatestProfileComment()
         {
             return UserProfileComments.GetLastComment();
         }
 
         public virtual UserProfileComments UserProfileComments { get; set; }
-        //public virtual ISet<Comment> CommentList { get; set; }
 
         public override bool Equals(object other)
         {
@@ -118,9 +118,6 @@ namespace GetIn
 
         public virtual DateTime Value { get; set; }
 
-        public override bool Equals(object obj){
-            return this.Value.Equals(((GetInDate) obj).Value);
-        }        
         public void Subtract(int years){
             Value = Value.Subtract(new TimeSpan(365*years, 0, 0, 0));
         }
@@ -192,6 +189,7 @@ namespace GetIn
                 return (obj as LoginId).Value == this.Value;
             return base.Equals(obj);
         }
+
         public override int GetHashCode()
         {
             return this.Value.GetHashCode();
@@ -253,7 +251,6 @@ namespace GetIn
 
     public class UserProfileComments
     {
-        //private ISet<Comment> listOfComments;
         public virtual ISet<Comment> List
         {
             get; set;
@@ -266,7 +263,7 @@ namespace GetIn
 
         public Comment GetLastComment()
         {
-            return (List.OrderByDescending(p => p.CommentDate)).FirstOrDefault();
+            return (List.OrderByDescending(p => p.CommentDate.Value)).FirstOrDefault();
         }
 
         public void Add(Comment comment)
