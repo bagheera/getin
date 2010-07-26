@@ -102,12 +102,13 @@ namespace GetIn
             }
         }
 
-        public virtual void AcceptFriendInvite(User u)
+        public virtual void AcceptFriendInvite(User friend)
         {
-            if (Inviters.Contains(u))
+            if (Inviters.Contains(friend))
             {
-                Friends.Add(u);
-                Inviters.Remove(u);
+                Friends.Add(friend);
+                friend.Friends.Add(this);
+                Inviters.Remove(friend);
             }
         }
 
@@ -126,6 +127,19 @@ namespace GetIn
         public virtual IList<User> LookupUsers(AgeRange ageRange)
         {
             return Repository.LookupUsers(this, ageRange);
+        }
+
+        public virtual IList<User> DegreeOfSeparation(User friend)
+        {
+            IList<User> degreeOfSeparation = new List<User>();
+            if (this.Friends.Contains(friend)){
+                degreeOfSeparation.Add(friend);
+                return degreeOfSeparation;
+            }
+            return degreeOfSeparation;
+        }
+        public virtual bool	isFriend(User other){
+            return Friends.Contains(other);
         }
     }
 

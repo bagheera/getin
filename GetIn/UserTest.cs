@@ -417,5 +417,60 @@ namespace GetIn
             Assert.AreEqual(savedUser.Gender.Code, user.Gender.Code);
         }
 
+
+
+        [Test]
+        public void onInvitationAcceptedUserShouldBePresentinFriendsList()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.True(suchit.isFriend(sumit));
+        }
+
+        [Test]
+        public void DegreeOfSeparationShouldBeOneWhenDirectFriends()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.AreEqual(1, sumit.DegreeOfSeparation(suchit).Count);
+        }
+
+
     }
 }
