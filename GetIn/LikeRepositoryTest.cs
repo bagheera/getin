@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Iesi.Collections;
 using NHibernate;
 using NUnit.Framework;
 
@@ -92,8 +93,6 @@ namespace GetIn
         [Test]
         public void LikeRepositoryShouldReturnTopThreeLikes()
         {
-            
-            //Add some likes
             user1.Likes.Add(new Like() {UserId = user1.LoginId, Text = "applesMostCommon"});
             user1.Likes.Add(new Like() {UserId = user1.LoginId, Text = "orangesSecondMostCommon"});
             user1.Likes.Add(new Like() {UserId = user1.LoginId, Text = "plumsThirdMostCommon"});
@@ -111,7 +110,7 @@ namespace GetIn
 
             registerUsers();
 
-            IList likesList = new LikeRepository(session).TopLikes();
+            IList likesList = new LikeRepository(session).HottestLikes();
             Assert.NotNull(likesList);
             Assert.AreEqual(3, likesList.Count);
             Assert.AreEqual(likesList[0], "applesMostCommon");
@@ -119,36 +118,56 @@ namespace GetIn
             Assert.AreEqual(likesList[2], "plumsThirdMostCommon");
         }
 
-//        [Test]
-//        public void WhenTieThenTopThreeCountsOfLikesAreReturned()
-//        {
-//            //Add some likes
-//            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank1" });
-//            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "anotherRank1" });
-//            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank2" });
-//            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank3" });
-//            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank4" });
-//
-//            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank1" });
-//            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "anotherRank1" });
-//            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank2" });
-//            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank3" });
-//
-//            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "rank1" });
-//            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "anotherRank1" });
-//            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "rank2" });
-//
-//            user4.Likes.Add(new Like() { UserId = user4.LoginId, Text = "rank1" });
-//            user4.Likes.Add(new Like() { UserId = user4.LoginId, Text = "anotherRank1" });
-//
-//            registerUsers();
-//
-//            IList likesList = new LikeRepository(session).TopLikes();
-//            Assert.NotNull(likesList);
-//            Assert.AreEqual(4, likesList.Count);
-//            Assert.AreEqual(likesList[2], "rank2");
-//            Assert.AreEqual(likesList[3], "rank3");
-//        }
+        [Test]
+        public void WhenTieThenTopThreeCountsOfLikesAreReturned()
+        {
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank1" });
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "anotherRank1" });
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank2" });
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank3" });
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank4" });
+
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank1" });
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "anotherRank1" });
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank2" });
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank3" });
+
+            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "rank1" });
+            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "anotherRank1" });
+            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "rank2" });
+
+            user4.Likes.Add(new Like() { UserId = user4.LoginId, Text = "rank1" });
+            user4.Likes.Add(new Like() { UserId = user4.LoginId, Text = "anotherRank1" });
+
+            registerUsers();
+
+            IList likesList = new LikeRepository(session).HottestLikes();
+            Assert.NotNull(likesList);
+            Assert.AreEqual(4, likesList.Count);
+            Assert.AreEqual(likesList[2], "rank2");
+            Assert.AreEqual(likesList[3], "rank3");
+        }
+
+        [Test]
+        public void WhenOnlyTwoLikesArePopularThenReturnJustTheTwo()
+        {
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "rank1" });
+            user1.Likes.Add(new Like() { UserId = user1.LoginId, Text = "anotherRank1" });
+
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "rank1" });
+            user2.Likes.Add(new Like() { UserId = user2.LoginId, Text = "anotherRank1" });
+
+            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "rank1" });
+            user3.Likes.Add(new Like() { UserId = user3.LoginId, Text = "anotherRank1" });
+
+            user4.Likes.Add(new Like() { UserId = user4.LoginId, Text = "rank1" });
+
+            registerUsers();
+
+            IList likesList = new LikeRepository(session).HottestLikes();
+            Assert.NotNull(likesList);
+            Assert.AreEqual(2, likesList.Count);
+        }
 
         private void registerUsers()
         {
@@ -162,37 +181,5 @@ namespace GetIn
             user3.Register();
             user4.Register();
         }
-    }
-
-    public interface ILikeRepository
-    {
-        IList TopLikes();
-    }
-
-    public class LikeRepository : ILikeRepository
-    {
-        private readonly ISession session;
-
-        public LikeRepository(ISession session)
-        {
-            this.session = session;
-        }
-
-        public IList TopLikes()
-        {
-//            IQuery query = session.CreateQuery("select likes.Text, count(likes.UserId) from Like likes group by likes.Text order by count(likes.UserId) desc");
-            IQuery query = session.CreateQuery("select likes.Text from Like likes group by likes.Text order by count(likes.UserId) desc");
-            query.SetMaxResults(3);
-            IList result = query.List();
-//            return hottestThree(result);
-            return result;
-        }
-
-//        private IList hottestThree(IList result)
-//        {
-//            IList result = new IList();
-//            int currentRank = 0;
-//            int currentRankTemperature = 0;
-//        }
     }
 }
