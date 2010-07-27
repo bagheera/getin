@@ -174,6 +174,17 @@ namespace GetIn{
 
             return similarity;
         }
+
+        public virtual IList<User> RecommendFriends(){
+            IList<User> users = Repository.NotFriendsOf(this);
+            IList<User> recommendedFriends = new List<User>();
+            foreach (var user in users){
+                if(ComputeSimilarityScore(user) >= 5){
+                    recommendedFriends.Add(user);
+                }
+            }
+            return recommendedFriends;
+        }
     }
 
 
