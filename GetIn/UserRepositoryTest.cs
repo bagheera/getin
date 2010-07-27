@@ -180,7 +180,7 @@ namespace GetIn
         public void UserRepositoryReturnsAllUsersMinusFriendsOfUser(){
             User currentUser = new User(new LoginId("123"), new Name(null, null))
                                    {
-                                       Id = 1 
+                                       Id = 1
                                    };
             User friendUser = new User(new LoginId("345"), new Name(null, null))
                                    {
