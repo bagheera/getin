@@ -555,10 +555,11 @@ namespace GetIn
 
             var loginid3 = new LoginId("manav@ThoughtWorks.com");
             var name3 = new Name("Manav", "Prasad");
-            var manav = new User(loginid2, name2) { Repository = repository };
+            var manav = new User(loginid3, name3) { Repository = repository };
 
             repository.Save(sumit);
             repository.Save(suchit);
+            repository.Save(manav);
 
             suchit.InviteFriend(sumit);
             sumit.AcceptFriendInvite(suchit);
@@ -590,10 +591,12 @@ namespace GetIn
 
             var loginid3 = new LoginId("manav@ThoughtWorks.com");
             var name3 = new Name("Manav", "Prasad");
-            var manav = new User(loginid2, name2) { Repository = repository };
+            var manav = new User(loginid3, name3) { Repository = repository };
+
 
             repository.Save(sumit);
             repository.Save(suchit);
+            repository.Save(manav);
 
             suchit.InviteFriend(sumit);
             sumit.AcceptFriendInvite(suchit);
@@ -629,16 +632,18 @@ namespace GetIn
 
             var loginid3 = new LoginId("manav@ThoughtWorks.com");
             var name3 = new Name("Manav", "Prasad");
-            var manav = new User(loginid2, name2) { Repository = repository };
+            var manav = new User(loginid3, name3) { Repository = repository };
 
 
             var loginid4 = new LoginId("Krishna@ThoughtWorks.com");
             var name4 = new Name("Krishna", "Prasad");
-            var krishna = new User(loginid2, name2) { Repository = repository };
+            var krishna = new User(loginid4, name4) { Repository = repository };
 
 
             repository.Save(sumit);
             repository.Save(suchit);
+            repository.Save(manav);
+            repository.Save(krishna);
 
             suchit.InviteFriend(sumit);
             sumit.AcceptFriendInvite(suchit);
@@ -662,7 +667,61 @@ namespace GetIn
 //        public void UserShouldBeAbleToFetchUsersWithSimilarLikes(){
 //
 //        }
+        [Test]
+        public void DegreeOfSeparationShouldReturnZeroSizeListWhenDegreeOfSeparationGreaterThanThree()
+        {
 
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            var loginid3 = new LoginId("manav@ThoughtWorks.com");
+            var name3 = new Name("Manav", "Prasad");
+            var manav = new User(loginid3, name3) { Repository = repository };
+
+
+            var loginid4 = new LoginId("Krishna@ThoughtWorks.com");
+            var name4 = new Name("Krishna", "Prasad");
+            var krishna = new User(loginid4, name4) { Repository = repository };
+
+            var loginid5 = new LoginId("srinivas@ThoughtWorks.com");
+            var name5 = new Name("Srinivas", "");
+            var srinivas = new User(loginid5, name5) { Repository = repository };
+
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+            repository.Save(manav);
+            repository.Save(krishna);
+            repository.Save(srinivas);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            sumit.InviteFriend(manav);
+            manav.AcceptFriendInvite(sumit);
+
+
+            manav.InviteFriend(krishna);
+            krishna.AcceptFriendInvite(manav);
+
+            krishna.InviteFriend(srinivas);
+            srinivas.AcceptFriendInvite(krishna);
+            
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+            session.Evict(manav);
+
+            Assert.AreEqual(0, suchit.DegreeOfSeparation(srinivas).Count);
+
+
+        }
         
 
 
