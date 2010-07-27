@@ -658,10 +658,79 @@ namespace GetIn
             Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
         }
 
-//        [Test]
-//        public void UserShouldBeAbleToFetchUsersWithSimilarLikes(){
-//
-//        }
+        [Test]
+        public void UserShouldNotRecommendFriends(){
+            User user1 = new User(new LoginId("123"), null);
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            User user2 = new User(new LoginId("234"), null);
+            User user3 = new User(new LoginId("234"), null);
+            repositoryMock.Setup(p => p.NotFriendsOf(user1)).Returns(new List<User> { user2, user3 });
+            user1.Repository = repositoryMock.Object;
+            Assert.AreEqual(0, user1.RecommendFriends().Count);
+            repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void UserShouldRecommendOneFriend(){
+            var user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
+            {
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("123"), Text = "Like1"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like2"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like3"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like4"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like5"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike1"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike2"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike3"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike4"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike5"},
+                               }),
+            };
+
+            var user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
+            {
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("345"), Text = "Like6"},
+                                   new Like() {UserId = new LoginId("345"), Text = "Like7"},
+                                   new Like() {UserId = new LoginId("345"), Text = "Like8"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike6"},
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike7"},
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike8"},
+                               }),
+            };
+            var user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
+            {
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("678"), Text = "Like1"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like2"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like3"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like4"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like5"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike6"},
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike7"},
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike8"},
+                               }),
+            };
+            var repositoryMock = new Moq.Mock<IUserRepository>();
+            repositoryMock.Setup(p => p.NotFriendsOf(user1)).Returns(new List<User> { user2, user3 });
+            user1.Repository = repositoryMock.Object;
+            Assert.AreEqual(1, user1.RecommendFriends().Count);
+            Assert.AreEqual(user3,user1.RecommendFriends().First());
+            repositoryMock.VerifyAll();
+        }
 
     }
 }
