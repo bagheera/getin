@@ -2,8 +2,9 @@ using System.Collections;
 
 namespace GetIn
 {
-    public interface ILikeRepository
+    public interface IUserPreferenceRepository
     {
         IList HottestLikes();
+        IList HottestDislikes();
     }
 }
