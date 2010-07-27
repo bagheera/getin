@@ -162,12 +162,12 @@ namespace GetIn{
             double similarity = 0d;
             foreach (Like like in Likes){
                 if (user.Likes.Contains(like))
-                    similarity += 1;
+                    similarity += Like.SIMILARITY_SCORE;
             }
 
             foreach (Dislike disLike in Dislikes){
                 if (user.Dislikes.Contains(disLike))
-                    similarity += 0.7d;
+                    similarity += Dislike.SIMILARITY_SCORE;
             }
 
             return similarity;
@@ -223,6 +223,7 @@ namespace GetIn{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
+        public const int SIMILARITY_SCORE = 1; 
 
         public virtual bool Equals(Like other){
             if (ReferenceEquals(null, other)) return false;
@@ -244,6 +245,7 @@ namespace GetIn{
 
     public class Dislike{
         private int id;
+        public static double SIMILARITY_SCORE = 0.7d;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
 
