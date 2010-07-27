@@ -485,9 +485,183 @@ namespace GetIn
             Assert.AreEqual(savedUser.Gender.Code, user.Gender.Code);
         }
 
+
+
+
+        [Test]
+        public void onInvitationAcceptedUserShouldBePresentinFriendsList()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.True(suchit.isFriend(sumit));
+        }
+
+        [Test]
+        public void DegreeOfSeparationShouldBeOneWhenDirectFriends()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.AreEqual(1, sumit.DegreeOfSeparation(suchit).Count);
+        }
+
+        [Test]
+        public void DegreeOfSeparationShouldBeTwoWhenUserIsAFriendOfFriend()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            var loginid3 = new LoginId("manav@ThoughtWorks.com");
+            var name3 = new Name("Manav", "Prasad");
+            var manav = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            sumit.InviteFriend(manav);
+            manav.AcceptFriendInvite(sumit);
+
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+            session.Evict(manav);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.AreEqual(2, suchit.DegreeOfSeparation(manav).Count);
+        }
+
+
+        [Test]
+        public void DegreeOfSeparationShouldBeMinimumOfTwoPathsForTheSameFriend()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            var loginid3 = new LoginId("manav@ThoughtWorks.com");
+            var name3 = new Name("Manav", "Prasad");
+            var manav = new User(loginid2, name2) { Repository = repository };
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            sumit.InviteFriend(manav);
+            manav.AcceptFriendInvite(sumit);
+
+
+            suchit.InviteFriend(manav);
+            manav.AcceptFriendInvite(suchit);
+
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+            session.Evict(manav);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.AreEqual(1, suchit.DegreeOfSeparation(manav).Count);
+        }
+
+
+        [Test]
+        public void DegreeOfSeparationShouldBeThreeWhenThreeIndirectFrindsBetweenInputUsers()
+        {
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            var loginid3 = new LoginId("manav@ThoughtWorks.com");
+            var name3 = new Name("Manav", "Prasad");
+            var manav = new User(loginid2, name2) { Repository = repository };
+
+
+            var loginid4 = new LoginId("Krishna@ThoughtWorks.com");
+            var name4 = new Name("Krishna", "Prasad");
+            var krishna = new User(loginid2, name2) { Repository = repository };
+
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+            sumit.InviteFriend(manav);
+            manav.AcceptFriendInvite(sumit);
+
+
+            manav.InviteFriend(krishna);
+            krishna.AcceptFriendInvite(manav);
+
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+            session.Evict(manav);
+
+            //IList<User> users = repository.LookupUsers(sumit);
+            Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
+        }
+
 //        [Test]
 //        public void UserShouldBeAbleToFetchUsersWithSimilarLikes(){
 //
 //        }
+
     }
 }

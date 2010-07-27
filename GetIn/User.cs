@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
+
 namespace GetIn
 {
+    //Comment for a git commit and cruise build test 
     public class User
     {
         public User()
@@ -13,10 +16,12 @@ namespace GetIn
             UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
             Inviters = new HashedSet<User>();
+            Likes = new HashedSet<Like>();
+            Dislikes = new HashedSet<Dislike>();
+
         }
 
-        public User(LoginId loginid, Name name) : this()
-        {
+        public User(LoginId loginid, Name name) : this(){
             LoginId = loginid;
             Name = name;
         }
@@ -39,7 +44,7 @@ namespace GetIn
 
         public virtual ISet<Dislike> Dislikes { get; set; }
 
-        public virtual ISet<Like> Likes { get; set; }
+        public virtual ISet<Like> Likes { get; set;}
 
         public virtual Gender Gender { get; set; }
 
@@ -47,74 +52,62 @@ namespace GetIn
 
         public virtual GetInDate DateOfBirth { get; set; }
 
-        public virtual void AddCommentToProfile(Comment comment)
-        {
+        public virtual void AddCommentToProfile(Comment comment){
             UserProfileComments.Add(comment);
         }
-        
+
         public virtual ISet<Comment> GetAllProfileComments(){
             return UserProfileComments.List;
         }
 
-        public virtual Comment GetLatestProfileComment()
-        {
+        public virtual Comment GetLatestProfileComment(){
             return UserProfileComments.GetLastComment();
         }
 
         public virtual UserProfileComments UserProfileComments { get; set; }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj){
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != typeof (User)) return false;
             return Equals((User) obj);
         }
 
-        public virtual bool Equals(User other)
-        {
+        public virtual bool Equals(User other){
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Equals(other.Id, Id);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode(){
             return Id.GetHashCode();
         }
 
-        public virtual void Register()
-        {
-            var usrToChkUnique = new User(this.LoginId,new Name());
+        public virtual void Register(){
+            var usrToChkUnique = new User(this.LoginId, new Name());
             var usrs = Repository.LookupUsers(usrToChkUnique);
-            if (usrs.Count != 0)
-            {
+            if (usrs.Count != 0){
                 throw new UserAlreadyExistsException(this);
             }
             Repository.Save(this);
         }
 
-        public virtual void	InviteFriend(User u)
-        {
-            if (!Friends.Contains(u))
-            {
+        public virtual void InviteFriend(User u){
+            if (!Friends.Contains(u)){
                 u.Inviters.Add(this);
             }
         }
 
-        public virtual void AcceptFriendInvite(User u)
-        {
-            if (Inviters.Contains(u))
-            {
-                Friends.Add(u);
-                Inviters.Remove(u);
+        public virtual void AcceptFriendInvite(User friend){
+            if (Inviters.Contains(friend)){
+                Friends.Add(friend);
+                friend.Friends.Add(this);
+                Inviters.Remove(friend);
             }
         }
 
-        public virtual void RejectFriendInvite(User u)
-        {
-            if (Inviters.Contains(u))
-            {
+        public virtual void RejectFriendInvite(User u){
+            if (Inviters.Contains(u)){
                 Inviters.Remove(u);
             }
         }
@@ -123,19 +116,31 @@ namespace GetIn
             return Repository.LookupUsers(this);
         }
 
-        public virtual IList<User> LookupUsers(AgeRange ageRange)
-        {
+        public virtual IList<User> LookupUsers(AgeRange ageRange){
             return Repository.LookupUsers(this, ageRange);
         }
 
-        public virtual double ComputeSimilarityScore(User user){
+
+        public virtual IList<User> DegreeOfSeparation(User friend){
+            DegreeOfSeparationFinder finder = new DegreeOfSeparationFinder(this);
+            return finder.DegreeOfSeparation(friend);
+        }
+
+        public virtual bool isFriend(User other){
+            return Friends.Contains(other);
+        }
+
+        public virtual double ComputeSimilarityScore(User user)
+        {
             double similarity = 0d;
-            foreach(Like like in Likes){
+            foreach (Like like in Likes)
+            {
                 if (user.Likes.Contains(like))
                     similarity += 1;
             }
-            
-            foreach(Dislike disLike in Dislikes){
+
+            foreach (Dislike disLike in Dislikes)
+            {
                 if (user.Dislikes.Contains(disLike))
                     similarity += 0.7d;
             }
@@ -144,19 +149,60 @@ namespace GetIn
         }
     }
 
-    public class Photo
-    {
+
+    public class DegreeOfSeparationFinder{
+        private Dictionary<User, User> prev = new Dictionary<User, User>();
+        private Dictionary<User, int> dist = new Dictionary<User, int>();
+
+        // run BFS in graph G from given source vertex s
+        public DegreeOfSeparationFinder(User user){
+            // put source on the queue
+            Queue<User> userQueue = new Queue<User>();
+            userQueue.Enqueue(user);
+            dist.Add(user, 0);
+
+            // repeated remove next vertex v from queue and insert
+            // all its neighbors, provided they haven't yet been visited
+            while (userQueue.Count() != 0){
+                User v = userQueue.Dequeue();
+                foreach (User friend in v.Friends){
+                    if (!dist.ContainsKey(friend)){
+                        userQueue.Enqueue(friend);
+                        dist.Add(friend, 1 + dist[v]);
+                        prev.Add(friend, v);
+                    }
+                }
+            }
+        }
+
+        // return the shortest path from v to s as an Iterable
+        public IList<User> DegreeOfSeparation(User other){
+            IList<User> path = new List<User>();
+            while (other != null && dist.ContainsKey(other)){
+                if (prev.ContainsKey(other)){
+                    path.Add(other);
+                    other = prev[other];
+                }
+                else{
+                    other = null;
+                }
+            }
+            return path;
+
+
+    }
+    }
+
+       
+    public class Photo{
         public byte[] Bytes { get; set; }
     }
 
-    public class GetInDate
-    {
-        public GetInDate()
-        {
+    public class GetInDate{
+        public GetInDate(){
         }
 
-        public GetInDate(DateTime dateTime)
-        {
+        public GetInDate(DateTime dateTime){
             Value = dateTime;
         }
 
@@ -166,26 +212,22 @@ namespace GetIn
             return new GetInDate(Value.Subtract(new TimeSpan(365*years, 0, 0, 0)));
         }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj){
             return base.Equals(obj);
         }
 
-        public bool Equals(GetInDate other)
-        {
+        public bool Equals(GetInDate other){
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return other.Value.Equals(Value);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode(){
             return Value.GetHashCode();
         }
     }
 
-    public class Like
-    {
+    public class Like{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
@@ -208,8 +250,7 @@ namespace GetIn
         }
     }
 
-    public class Dislike
-    {
+    public class Dislike{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
@@ -240,14 +281,11 @@ namespace GetIn
         }
     }
 
-    public class Name
-    {
-        public Name()
-        {
+    public class Name{
+        public Name(){
         }
 
-        public Name(string firstname, string lastname)
-        {
+        public Name(string firstname, string lastname){
             FirstName = firstname;
             LastName = lastname;
         }
@@ -255,10 +293,8 @@ namespace GetIn
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Name)
-            {
+        public override bool Equals(object obj){
+            if (obj is Name){
                 var name = obj as Name;
                 return name.FirstName.Equals(this.FirstName, StringComparison.OrdinalIgnoreCase) &&
                        name.LastName.Equals(this.LastName, StringComparison.OrdinalIgnoreCase);
@@ -266,56 +302,50 @@ namespace GetIn
             return base.Equals(obj);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode(){
             return (this.FirstName.ToLower() + this.LastName.ToLower()).GetHashCode();
         }
     }
 
-    public class LoginId
-    {
-
+    public class LoginId{
         public string Id { get; private set; }
+
         public LoginId(){
         }
 
-        public LoginId(string id)
-        {
+        public LoginId(string id){
             Value = id;
         }
 
 
         public virtual string Value { get; set; }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj){
             if (obj is LoginId)
                 return (obj as LoginId).Value == this.Value;
             return base.Equals(obj);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode(){
             return this.Value.GetHashCode();
         }
     }
 
-    public class Gender
-    {
+    public class Gender{
         private char gcode = 'M';
 
-        public Gender(){ }
-        public Gender(char code) {
-            Code = code; }
+        public Gender(){
+        }
+
+        public Gender(char code){
+            Code = code;
+        }
 
 
-        public char Code
-        {
+        public char Code{
             get { return gcode; }
-            set
-            {
-                if (gcode != 'M' && gcode != 'F')
-                {
+            set{
+                if (gcode != 'M' && gcode != 'F'){
                     throw new ArgumentException("Invalid gender code.");
                 }
 
@@ -323,8 +353,7 @@ namespace GetIn
             }
         }
 
-        public override string ToString()
-        {
+        public override string ToString(){
             return Code == 'M' ? "Male" : "Female";
         }
 
@@ -333,51 +362,40 @@ namespace GetIn
         }
 
 
-        public bool Equals(Gender other)
-        {
+        public bool Equals(Gender other){
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return other.Code == Code;
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode(){
             return Code.GetHashCode();
         }
     }
 
-    public class Location
-    {
+    public class Location{
         public virtual string City { get; set; }
         public virtual string Country { get; set; }
         public virtual string ZipCode { get; set; }
     }
 
-    public class UserProfileComments
-    {
-        public virtual ISet<Comment> List
-        {
-            get; set;
-        }
+    public class UserProfileComments{
+        public virtual ISet<Comment> List { get; set; }
 
-        public UserProfileComments()
-        {
+        public UserProfileComments(){
             List = new HashedSet<Comment>();
         }
 
-        public Comment GetLastComment()
-        {
+        public Comment GetLastComment(){
             return (List.OrderByDescending(p => p.CommentDate.Value)).FirstOrDefault();
         }
 
-        public void Add(Comment comment)
-        {
+        public void Add(Comment comment){
             List.Add(comment);
         }
     }
 
-    public class AgeRange
-    {
+    public class AgeRange{
         public int From { get; set; }
         public int To { get; set; }
     }
