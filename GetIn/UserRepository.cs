@@ -74,12 +74,13 @@ namespace GetIn
 
         public IList<User> NotFriendsOf(User user){
             ICriteria lookupCriteria = Session.CreateCriteria(typeof(User));
-            lookupCriteria.Add(Restrictions.Not(Restrictions.Eq("Id", user.Id)));
-            lookupCriteria.Add(Restrictions.Not(Restrictions.In("Id", ExtractUserIds(user.Friends))));
+            var exclusionList = ExtractUserIds(user.Friends);
+            exclusionList.Add(user.Id);
+            lookupCriteria.Add(Restrictions.Not(Restrictions.In("Id", exclusionList)));
             return lookupCriteria.List<User>();
         }
 
-        private ICollection ExtractUserIds(ISet<User> friends){
+        private IList ExtractUserIds(ISet<User> friends){
             IList userIds = new ArrayList();
             foreach (var user in friends){
                 userIds.Add(user.Id);
