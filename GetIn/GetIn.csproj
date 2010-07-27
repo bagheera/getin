@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsTest.cs" />
+    <Compile Include="LikeRepositoryTest.cs" />
     <Compile Include="NHibernateFixtureBase.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="ProfileTest.cs" />
