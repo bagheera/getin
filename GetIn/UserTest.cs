@@ -489,8 +489,5 @@ namespace GetIn
 //        public void UserShouldBeAbleToFetchUsersWithSimilarLikes(){
 //
 //        }
-
-        
-
     }
 }

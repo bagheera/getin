@@ -71,6 +71,21 @@ namespace GetIn
                 }
             }
         }
+
+        public IList<User> NotFriendsOf(User user){
+            ICriteria lookupCriteria = Session.CreateCriteria(typeof(User));
+            lookupCriteria.Add(Restrictions.Not(Restrictions.Eq("Id", user.Id)));
+            lookupCriteria.Add(Restrictions.Not(Restrictions.In("Id", ExtractUserIds(user.Friends))));
+            return lookupCriteria.List<User>();
+        }
+
+        private ICollection ExtractUserIds(ISet<User> friends){
+            System.Collections.IList userIds = new System.Collections.ArrayList();
+            foreach (var user in friends){
+                userIds.Add(user.Id);
+            }
+            return userIds;
+        }
     }
 
     public class UserAlreadyExistsException : Exception
@@ -86,5 +101,6 @@ namespace GetIn
         void Save(User user);
         IList<User> LookupUsers(User user);
         IList<User> LookupUsers(User user,AgeRange ageRange);
+        IList<User> NotFriendsOf(User user);
     }
 }

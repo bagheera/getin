@@ -176,7 +176,21 @@ namespace GetIn
             Assert.AreEqual(1, results.Count);
         }
 
+        [Test]
+        public void UserRepositoryReturnsAllUsersMinusFriendsOfUser(){
+            User currentUser = new User(new LoginId("123"), new Name(null, null))
+                                   {
+                                       Id = 1 
+                                   };
+            User friendUser = new User(new LoginId("345"), new Name(null, null))
+                                   {
+                                       Id = 2 
+                                   };
+            currentUser.Friends.Add(friendUser);
 
+            IList<User> users = usrRep.NotFriendsOf(currentUser);
+            Assert.AreEqual(users.Count, 1);
+        }
 
 
         /*[Test]
