@@ -82,7 +82,7 @@
     </id>
 
     <component name="UserId">
-      <property name="Value" column="user_id" type="String" />
+      <property name="Value" column="user_id" type="String"/>
     </component>
 
     <property name="Text" column="dislike_text" type="String" />

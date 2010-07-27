@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace GetIn
@@ -44,6 +45,18 @@ namespace GetIn
                 Gender = new Gender('F'),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Big Profile"),
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("123"), Text = "Like1"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like2"},
+                                   new Like() {UserId = new LoginId("123"), Text = "Like3"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike1"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike2"},
+                                   new Dislike() {UserId = new LoginId("123"), Text = "Dislike3"},
+                               }),
             };
             usrRep.Save(user1);
             User user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
@@ -53,6 +66,18 @@ namespace GetIn
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Short and sweet crap"),
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("345"), Text = "Like3"},
+                                   new Like() {UserId = new LoginId("345"), Text = "Like4"},
+                                   new Like() {UserId = new LoginId("345"), Text = "Like5"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike3"},
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike4"},
+                                   new Dislike() {UserId = new LoginId("345"), Text = "Dislike5"},
+                               }),
             };
             usrRep.Save(user2);
             User user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
@@ -62,8 +87,24 @@ namespace GetIn
                 Gender = new Gender(),
                 Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
                 Profile = new Profile("Some profile information which is useless!!! \n Some more crap!"),
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("678"), Text = "Like1"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like4"},
+                                   new Like() {UserId = new LoginId("678"), Text = "Like2"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike1"},
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike4"},
+                                   new Dislike() {UserId = new LoginId("678"), Text = "Dislike3"},
+                               }),
             };
-            usrRep.Save(user3);            
+            usrRep.Save(user3);
+            user1.Friends.Add(user2);
+            user1.Friends.Add(user3);
+            user2.Friends.Add(user3);
+//            user3.Friends.Add(user1);
         }
 
         [Test]
@@ -134,6 +175,9 @@ namespace GetIn
             IList<User> results = usrRep.LookupUsers(usr);
             Assert.AreEqual(1, results.Count);
         }
+
+
+
 
         /*[Test]
         public void LookUpUserBasedOnGender(){
