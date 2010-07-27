@@ -145,11 +145,13 @@ namespace GetIn{
 
             User tempFriend = indirectFriend;
 
+            if (!friendChain.ContainsKey(tempFriend))
+            {
+                return path;
+            }
             while (!tempFriend.Equals(this)){
-                if (friendChain.ContainsKey(tempFriend)){
                     path.Add(tempFriend);
                     tempFriend = friendChain[tempFriend];
-                }
             }
             return path;
         }

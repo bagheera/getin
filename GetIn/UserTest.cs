@@ -658,6 +658,7 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
+            session.Evict(krishna);
 
             //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
@@ -718,8 +719,44 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
-
+            session.Evict(krishna);
+            session.Evict(srinivas);
             Assert.AreEqual(0, suchit.DegreeOfSeparation(srinivas).Count);
+
+
+        }
+
+        [Test]
+        public void DegreeOfSeparationShouldReturnZeroSizeListWhenNotFriends()
+        {
+
+            IUserRepository repository = new UserRepository(session);
+
+            var loginid = new LoginId("suchitP@ThoughtWorks.com");
+            var name = new Name("Suchit", "Puri");
+            var suchit = new User(loginid, name) { Repository = repository };
+
+            var loginid2 = new LoginId("sumitg@ThoughtWorks.com");
+            var name2 = new Name("Sumit", "Gupta");
+            var sumit = new User(loginid2, name2) { Repository = repository };
+
+            var loginid3 = new LoginId("manav@ThoughtWorks.com");
+            var name3 = new Name("Manav", "Prasad");
+            var manav = new User(loginid3, name3) { Repository = repository };
+
+
+            repository.Save(sumit);
+            repository.Save(suchit);
+            repository.Save(manav);
+          
+            suchit.InviteFriend(sumit);
+            sumit.AcceptFriendInvite(suchit);
+          
+            session.Flush();
+            session.Evict(suchit);
+            session.Evict(sumit);
+            session.Evict(manav);
+            Assert.AreEqual(0, suchit.DegreeOfSeparation(manav).Count);
 
 
         }
