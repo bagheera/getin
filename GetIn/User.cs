@@ -9,13 +9,14 @@ using NHibernate.Mapping;
 namespace GetIn{
     //Comment for a git commit and cruise build test 
     public class User{
+        private const int MAXIMUM_DEGREE_OF_SEPARATION = 3;
+        
         public User(){
             UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
             Inviters = new HashedSet<User>();
             Likes = new HashedSet<Like>();
             Dislikes = new HashedSet<Dislike>();
-
         }
 
         public User(LoginId loginid, Name name) : this(){
@@ -41,7 +42,7 @@ namespace GetIn{
 
         public virtual ISet<Dislike> Dislikes { get; set; }
 
-        public virtual ISet<Like> Likes { get; set;}
+        public virtual ISet<Like> Likes { get; set; }
 
         public virtual Gender Gender { get; set; }
 
@@ -121,9 +122,16 @@ namespace GetIn{
         public virtual IList<User> DegreeOfSeparation(User indirectFriend){
             Dictionary<User, User> friendChain = new Dictionary<User, User>();
             Queue<User> userQueue = new Queue<User>();
+            IList<User> path = new List<User>();
             userQueue.Enqueue(this);
+            int friendChainLength = 0;
             while (userQueue.Count() != 0){
                 User user = userQueue.Dequeue();
+
+                if (friendChainLength++ > MAXIMUM_DEGREE_OF_SEPARATION)
+                {
+                    return path;
+                }
                 foreach (User friend in user.Friends){
                     if (!friendChain.ContainsKey(friend)){
                         friendChain.Add(friend, user);
@@ -134,9 +142,10 @@ namespace GetIn{
                     }
                 }
             }
+
             User tempFriend = indirectFriend;
-            IList<User> path = new List<User>();
-            while (tempFriend != null && tempFriend != this){
+
+            while (!tempFriend.Equals(this)){
                 if (friendChain.ContainsKey(tempFriend)){
                     path.Add(tempFriend);
                     tempFriend = friendChain[tempFriend];
@@ -288,6 +297,7 @@ namespace GetIn{
         public LoginId(string id){
             Value = id;
         }
+
 
         public virtual string Value { get; set; }
 

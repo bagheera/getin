@@ -105,6 +105,27 @@ namespace GetIn
             user1.Friends.Add(user3);
             user2.Friends.Add(user3);
 //            user3.Friends.Add(user1);
+            User user4 = new User(new LoginId("91011"), new Name("Vivek", "Jain"))
+            {
+                DateOfBirth = new GetInDate(DateTime.Today.AddYears(-28)),
+                Location = new Location { City = "Calcutta", Country = "India" },
+                Gender = new Gender(),
+                Picture = new Photo { Bytes = new byte[] { 1, 2, 3, 4, 5 } },
+                Profile = new Profile("Some profile information which is useless!!! \n Some more crap! Some more crap!"),
+                Likes = new HashedSet<Like>(new[]
+                               {
+                                   new Like() {UserId = new LoginId("91011"), Text = "Like4"},
+                                   new Like() {UserId = new LoginId("91011"), Text = "Like7"},
+                                   new Like() {UserId = new LoginId("91011"), Text = "Like9"},
+                               }),
+                Dislikes = new HashedSet<Dislike>(new[]
+                               {
+                                   new Dislike() {UserId = new LoginId("91011"), Text = "Dislike1"},
+                                   new Dislike() {UserId = new LoginId("91011"), Text = "Dislike5"},
+                               }),
+            };
+            usrRep.Save(user4);
+
         }
 
         [Test]
@@ -156,7 +177,7 @@ namespace GetIn
             User usr = new User(null, new Name(null,null));
             usr.DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25));
             IList<User> results = usrRep.LookupUsers(usr, new AgeRange{From = 20, To = 29});
-            Assert.AreEqual(2, results.Count);
+            Assert.AreEqual(3, results.Count);
         }
 
         [Test]
@@ -164,7 +185,7 @@ namespace GetIn
             User usr = new User(null, new Name(null, null));
             usr.Profile = new Profile("crap");
             IList<User> results = usrRep.LookupUsers(usr);
-            Assert.AreEqual(2, results.Count);
+            Assert.AreEqual(3, results.Count);
         }
 
         [Test]
@@ -176,7 +197,25 @@ namespace GetIn
             Assert.AreEqual(1, results.Count);
         }
 
+        [Test]
+        public void UserRepositoryReturnsAllUsersMinusFriendsOfUser(){
 
+            User user = new User(new LoginId("123"), new Name(null, null));
+            IList<User> results = usrRep.LookupUsers(user);
+            User userWithIdMatched = results[0];
+            Assert.AreEqual(2, userWithIdMatched.Friends.Count);
+            IList<User> notFriendsOfUser = usrRep.NotFriendsOf(userWithIdMatched);
+
+            Assert.AreEqual(1, notFriendsOfUser.Count);
+            
+            user = new User(new LoginId("91011"), new Name(null, null));
+            results = usrRep.LookupUsers(user);
+            userWithIdMatched = results[0];
+            Assert.AreEqual(0, userWithIdMatched.Friends.Count);
+            notFriendsOfUser = usrRep.NotFriendsOf(userWithIdMatched);
+
+            Assert.AreEqual(3, notFriendsOfUser.Count);
+        }
 
 
         /*[Test]
