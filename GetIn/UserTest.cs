@@ -695,6 +695,7 @@ namespace GetIn
             var srinivas = new User(loginid5, name5) { Repository = repository };
 
 
+
             repository.Save(sumit);
             repository.Save(suchit);
             repository.Save(manav);
@@ -723,7 +724,5 @@ namespace GetIn
 
         }
         
-
-
     }
 }
