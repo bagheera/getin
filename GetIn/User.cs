@@ -5,13 +5,10 @@ using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
 
-namespace GetIn
-{
+namespace GetIn{
     //Comment for a git commit and cruise build test 
-    public class User
-    {
-        public User()
-        {
+    public class User{
+        public User(){
             UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
             Inviters = new HashedSet<User>();
@@ -117,26 +114,45 @@ namespace GetIn
         }
 
 
-        public virtual IList<User> DegreeOfSeparation(User friend){
-            DegreeOfSeparationFinder finder = new DegreeOfSeparationFinder(this);
-            return finder.DegreeOfSeparation(friend);
+        public virtual IList<User> DegreeOfSeparation(User indirectFriend){
+            Dictionary<User, User> friendChain = new Dictionary<User, User>();
+            Queue<User> userQueue = new Queue<User>();
+            userQueue.Enqueue(this);
+            while (userQueue.Count() != 0){
+                User user = userQueue.Dequeue();
+                foreach (User friend in user.Friends){
+                    if (!friendChain.ContainsKey(friend)){
+                        friendChain.Add(friend, user);
+                        if (friend.Equals(indirectFriend)){
+                            break;
+                        }
+                        userQueue.Enqueue(friend);
+                    }
+                }
+            }
+            User tempFriend = indirectFriend;
+            IList<User> path = new List<User>();
+            while (tempFriend != null && tempFriend != this){
+                if (friendChain.ContainsKey(tempFriend)){
+                    path.Add(tempFriend);
+                    tempFriend = friendChain[tempFriend];
+                }
+            }
+            return path;
         }
 
         public virtual bool isFriend(User other){
             return Friends.Contains(other);
         }
 
-        public virtual double ComputeSimilarityScore(User user)
-        {
+        public virtual double ComputeSimilarityScore(User user){
             double similarity = 0d;
-            foreach (Like like in Likes)
-            {
+            foreach (Like like in Likes){
                 if (user.Likes.Contains(like))
                     similarity += 1;
             }
 
-            foreach (Dislike disLike in Dislikes)
-            {
+            foreach (Dislike disLike in Dislikes){
                 if (user.Dislikes.Contains(disLike))
                     similarity += 0.7d;
             }
@@ -146,50 +162,6 @@ namespace GetIn
     }
 
 
-    public class DegreeOfSeparationFinder{
-        private Dictionary<User, User> prev = new Dictionary<User, User>();
-        private Dictionary<User, int> dist = new Dictionary<User, int>();
-
-        // run BFS in graph G from given source vertex s
-        public DegreeOfSeparationFinder(User user){
-            // put source on the queue
-            Queue<User> userQueue = new Queue<User>();
-            userQueue.Enqueue(user);
-            dist.Add(user, 0);
-
-            // repeated remove next vertex v from queue and insert
-            // all its neighbors, provided they haven't yet been visited
-            while (userQueue.Count() != 0){
-                User v = userQueue.Dequeue();
-                foreach (User friend in v.Friends){
-                    if (!dist.ContainsKey(friend)){
-                        userQueue.Enqueue(friend);
-                        dist.Add(friend, 1 + dist[v]);
-                        prev.Add(friend, v);
-                    }
-                }
-            }
-        }
-
-        // return the shortest path from v to s as an Iterable
-        public IList<User> DegreeOfSeparation(User other){
-            IList<User> path = new List<User>();
-            while (other != null && dist.ContainsKey(other)){
-                if (prev.ContainsKey(other)){
-                    path.Add(other);
-                    other = prev[other];
-                }
-                else{
-                    other = null;
-                }
-            }
-            return path;
-
-
-    }
-    }
-
-       
     public class Photo{
         public byte[] Bytes { get; set; }
     }
