@@ -78,11 +78,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LikeRepository.cs" />
+    <Compile Include="UserPreferenceRepository.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsTest.cs" />
-    <Compile Include="ILikeRepository.cs" />
-    <Compile Include="LikeRepositoryTest.cs" />
+    <Compile Include="IUserPreferenceRepository.cs" />
+    <Compile Include="UserPreferenceRepositoryTest.cs" />
     <Compile Include="NHibernateFixtureBase.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="ProfileTest.cs" />
