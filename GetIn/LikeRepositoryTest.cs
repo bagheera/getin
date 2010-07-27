@@ -182,6 +182,7 @@ namespace GetIn
         {
 //            IQuery query = session.CreateQuery("select likes.Text, count(likes.UserId) from Like likes group by likes.Text order by count(likes.UserId) desc");
             IQuery query = session.CreateQuery("select likes.Text from Like likes group by likes.Text order by count(likes.UserId) desc");
+            query.SetMaxResults(3);
             IList result = query.List();
 //            return hottestThree(result);
             return result;
