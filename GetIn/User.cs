@@ -6,6 +6,7 @@ using NHibernate.Mapping;
 
 namespace GetIn
 {
+    //Comment for a git commit and cruise build test 
     public class User
     {
         public User()
