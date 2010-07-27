@@ -234,6 +234,74 @@ namespace GetIn
             Assert.AreEqual(0, umar.Inviters.Count);
             Assert.IsTrue(!umar.Friends.Contains(manish));
         }
+
+        [Test]
+        public void TwoLikessAreSameIfTextInLikesAreEqualAndIsNotDependantOnUserId(){
+            Like like1 = new Like(){Text="Like1"};
+            Like like2 = new Like(){Text="Like1"};
+
+            Assert.True(like1.Equals(like2));
+        }
+        
+        [Test]
+        public void TwoDisLikesAreSameIfTextInDislikesAreEqualAndIsNotDependantOnUserId(){
+            Dislike like1 = new Dislike(){Text="Dislike1"};
+            Dislike like2 = new Dislike(){Text="Dislike1"};
+
+            Assert.True(like1.Equals(like2));
+        }
+
+        [Test]
+        public void UserShouldBeAbleToComputeSimilarityScoreWithAnotherUser()
+        {
+            LoginId loginId1 = new LoginId("test@ThoughtWorks.com");
+            string firstname1 = "firstName";
+            string lastname1 = "lastName";
+            Name name1 = new Name(firstname1, lastname1);
+
+            Like[] likes1 = new Like[]
+                               {
+                                   new Like() {UserId = loginId1, Text = "Like1"},
+                                   new Like() {UserId = loginId1, Text = "Like2"},
+                                   new Like() {UserId = loginId1, Text = "Like3"},
+                               };
+
+            Dislike[] dlikes1 = new Dislike[]
+                                   {
+                                       new Dislike() {UserId = loginId1, Text = "Dislike1"},
+                                       new Dislike() {UserId = loginId1, Text = "Dislike2"},
+                                       new Dislike() {UserId = loginId1, Text = "Dislike3"},
+                                   };
+
+            User currentUser = new User(loginId1, name1)
+            {
+                Likes = new HashedSet<Like>(likes1),
+                Dislikes = new HashedSet<Dislike>(dlikes1),
+            };
+
+
+            LoginId loginId2 = new LoginId("anotherTest@thoughtworks.com");
+            Like[] likes2 = new Like[]
+                               {
+                                   new Like() {UserId = loginId2, Text = "Like1"},
+                                   new Like() {UserId = loginId2, Text = "Like2"},
+                                   new Like() {UserId = loginId2, Text = "Like4"},
+                               };
+            Dislike[] dlikes2 = new Dislike[]
+                                   {
+                                       new Dislike() {UserId = loginId2, Text = "Dislike1"},
+                                       new Dislike() {UserId = loginId2, Text = "Dislike4"},
+                                       new Dislike() {UserId = loginId2, Text = "Dislike5"},
+                                   };
+
+            User anotherUser = new User(loginId2, new Name("anotherFirstName", "anotherLastName"))
+            {
+                Likes = new HashedSet<Like>(likes2),
+                Dislikes = new HashedSet<Dislike>(dlikes2),
+            };
+
+            Assert.AreEqual(2.7d, currentUser.ComputeSimilarityScore(anotherUser));
+        }
     }
 
     [TestFixture]
@@ -419,6 +487,7 @@ namespace GetIn
 
 
 
+
         [Test]
         public void onInvitationAcceptedUserShouldBePresentinFriendsList()
         {
@@ -588,6 +657,14 @@ namespace GetIn
             //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
         }
+
+//        [Test]
+//        public void UserShouldBeAbleToFetchUsersWithSimilarLikes(){
+//
+//        }
+
+        
+
 
     }
 }

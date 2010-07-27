@@ -4,9 +4,14 @@ using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
-namespace GetIn{
-    public class User{
-        public User(){
+
+namespace GetIn
+{
+    //Comment for a git commit and cruise build test 
+    public class User
+    {
+        public User()
+        {
             UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
             Inviters = new HashedSet<User>();
@@ -111,6 +116,7 @@ namespace GetIn{
             return Repository.LookupUsers(this, ageRange);
         }
 
+
         public virtual IList<User> DegreeOfSeparation(User friend){
             DegreeOfSeparationFinder finder = new DegreeOfSeparationFinder(this);
             return finder.DegreeOfSeparation(friend);
@@ -118,6 +124,24 @@ namespace GetIn{
 
         public virtual bool isFriend(User other){
             return Friends.Contains(other);
+        }
+
+        public virtual double ComputeSimilarityScore(User user)
+        {
+            double similarity = 0d;
+            foreach (Like like in Likes)
+            {
+                if (user.Likes.Contains(like))
+                    similarity += 1;
+            }
+
+            foreach (Dislike disLike in Dislikes)
+            {
+                if (user.Dislikes.Contains(disLike))
+                    similarity += 0.7d;
+            }
+
+            return similarity;
         }
     }
 
@@ -160,10 +184,12 @@ namespace GetIn{
                 }
             }
             return path;
-        }
+
+
+    }
     }
 
-
+       
     public class Photo{
         public byte[] Bytes { get; set; }
     }
@@ -201,12 +227,54 @@ namespace GetIn{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
+
+        public virtual bool Equals(Like other){
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.Text, Text);
+        }
+
+        public override bool Equals(object obj){
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (Like)) return false;
+            return Equals((Like) obj);
+        }
+
+        public override int GetHashCode(){
+            return (Text != null ? Text.GetHashCode() : 0);
+        }
     }
 
     public class Dislike{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
+
+        public virtual bool Equals(Dislike other){
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.Text, Text);
+        }
+
+        public override bool Equals(object obj){
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (Dislike)) return false;
+            return Equals((Dislike) obj);
+        }
+
+        public override int GetHashCode(){
+            return (Text != null ? Text.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(Dislike left, Dislike right){
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Dislike left, Dislike right){
+            return !Equals(left, right);
+        }
     }
 
     public class Name{

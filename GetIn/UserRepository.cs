@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 using NHibernate;
 using NHibernate.Criterion;
 
@@ -46,6 +48,7 @@ namespace GetIn
 
         public IList<User> LookupUsers(User user){
             var lookupCriteria = BuildLookupCriteria(user);
+            Console.WriteLine(lookupCriteria.List<User>());
             return lookupCriteria.List<User>();
         }
 
@@ -59,7 +62,7 @@ namespace GetIn
             return lookupCriteria.List<User>();
         }
 
-        private void AddRestriction(ICriteria criteria, String type, Object value,Boolean exactMatch){
+         private void AddRestriction(ICriteria criteria, String type, Object value,Boolean exactMatch){
             if (criteria != null && type != null && value != null){
                 if (exactMatch){
                     criteria.Add(Restrictions.Eq(type, value));
