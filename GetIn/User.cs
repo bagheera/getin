@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Mapping;
 
@@ -13,6 +14,9 @@ namespace GetIn
             UserProfileComments = new UserProfileComments();
             Friends = new HashedSet<User>();
             Inviters = new HashedSet<User>();
+            Likes = new HashedSet<Like>();
+            Dislikes = new HashedSet<Dislike>();
+
         }
 
         public User(LoginId loginid, Name name) : this()
@@ -39,7 +43,7 @@ namespace GetIn
 
         public virtual ISet<Dislike> Dislikes { get; set; }
 
-        public virtual ISet<Like> Likes { get; set; }
+        public virtual ISet<Like> Likes { get; set;}
 
         public virtual Gender Gender { get; set; }
 
