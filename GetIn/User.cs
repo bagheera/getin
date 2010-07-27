@@ -159,18 +159,18 @@ namespace GetIn{
         }
 
         public virtual double ComputeSimilarityScore(User user){
-            double similarity = 0d;
+            double similarityScore = 0d;
             foreach (Like like in Likes){
                 if (user.Likes.Contains(like))
-                    similarity += Like.SIMILARITY_SCORE;
+                    similarityScore += Like.SIMILARITY_SCORE;
             }
 
             foreach (Dislike disLike in Dislikes){
                 if (user.Dislikes.Contains(disLike))
-                    similarity += Dislike.SIMILARITY_SCORE;
+                    similarityScore += Dislike.SIMILARITY_SCORE;
             }
 
-            return similarity;
+            return similarityScore;
         }
 
         public virtual IList<User> RecommendFriends(){

@@ -80,7 +80,7 @@ namespace GetIn
         }
 
         private ICollection ExtractUserIds(ISet<User> friends){
-            System.Collections.IList userIds = new System.Collections.ArrayList();
+            IList userIds = new ArrayList();
             foreach (var user in friends){
                 userIds.Add(user.Id);
             }
