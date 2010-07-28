@@ -535,11 +535,9 @@ namespace GetIn
             session.Flush();
             session.Evict(suchit);
             session.Evict(sumit);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(1, sumit.DegreeOfSeparation(suchit).Count);
         }
-
+        //TODO try not to hit the database
         [Test]
         public void DegreeOfSeparationShouldBeTwoWhenUserIsAFriendOfFriend()
         {
@@ -570,8 +568,6 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(2, suchit.DegreeOfSeparation(manav).Count);
         }
 
@@ -610,8 +606,6 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(1, suchit.DegreeOfSeparation(manav).Count);
         }
 
@@ -658,8 +652,6 @@ namespace GetIn
             session.Evict(sumit);
             session.Evict(manav);
             session.Evict(krishna);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
         }
 
