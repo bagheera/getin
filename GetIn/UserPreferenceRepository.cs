@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Iesi.Collections;
 using NHibernate;
 
@@ -26,7 +27,7 @@ namespace GetIn
             IQuery query =
                 session.CreateQuery(
                     queryString);
-            IList result = query.List();
+            IList<object[]> result = query.List<Object[]>();
             return hottestThree(result);
         }
 
@@ -37,11 +38,11 @@ namespace GetIn
             return getHottestWithQuery(queryString);
         }
 
-        private static IList hottestThree(IList inputList)
+        private static IList hottestThree(IEnumerable<object[]> inputList)
         {
             IList result = new ArrayList();
             ISet hottestTemperatures = new HashedSet();
-            foreach (Object[] row in inputList)
+            foreach (var row in inputList)
             {
                 bool isAdded = hottestTemperatures.Add(row[1]);
                 if (isAdded)
