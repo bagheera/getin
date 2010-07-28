@@ -302,6 +302,30 @@ namespace GetIn
 
             Assert.AreEqual(2.7d, currentUser.SimilarityScore(anotherUser));
         }
+
+        [Test]
+        public void ShouldBeAbleToCreateAGroup(){
+            User user = new User(new LoginId("123"), null);
+            Group group = new Group() {Name = "Nature-Lovers"};
+            var repositoryMock = new Moq.Mock<IGroupRepository>();
+            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { });
+            repositoryMock.Setup(p => p.Create(group));
+            user.GroupRepository = repositoryMock.Object;
+            user.CreateGroup(group);
+            repositoryMock.VerifyAll();
+        }
+
+        [Test,ExpectedException(typeof(GroupAlreadyExistsException))]
+        public void ShouldNotBeAbleToCreateGroupIfAlreadyExists(){
+            User user = new User(new LoginId("123"), null);
+            Group group = new Group() { Name = "Nature-Lovers" };
+            var repositoryMock = new Moq.Mock<IGroupRepository>();
+            user.GroupRepository = repositoryMock.Object;
+            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { group });
+//            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
+            user.CreateGroup(group);
+            repositoryMock.VerifyAll();
+        }
     }
 
     [TestFixture]

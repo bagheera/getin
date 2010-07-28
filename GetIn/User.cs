@@ -9,6 +9,7 @@ using NHibernate.Mapping;
 namespace GetIn{
     //Comment for a git commit and cruise build test 
     public class User{
+        public IGroupRepository GroupRepository { get; set; }
         private const int MAXIMUM_DEGREE_OF_SEPARATION = 3;
         
         public User(){
@@ -184,6 +185,15 @@ namespace GetIn{
                 }
             }
             return recommendedFriends;
+        }   
+
+        public virtual void CreateGroup(Group group){
+            var groups = GroupRepository.LookupGroup(group);
+            if (groups.Count != 0)
+            {
+                throw new GroupAlreadyExistsException(group);
+            }
+            GroupRepository.Create(group);
         }
     }
 

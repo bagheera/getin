@@ -9,5 +9,12 @@ namespace GetIn
         public void CanCreateNewGroupWithIdAndName(){
             new Group {Id = 10, Name = "nature-lovers", Description = "Those who love nature can join the group"};
         }
+
+        [Test]
+        public void GroupShouldHaveNameDuringCreation(){
+            new Group("Nature-lovers");
+        }
     }
+
+    
 }

@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Group.cs" />
     <Compile Include="GroupTest.cs" />
+    <Compile Include="IGroupRepository.cs" />
     <Compile Include="UserPreferenceRepository.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsTest.cs" />
