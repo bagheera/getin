@@ -323,11 +323,12 @@ namespace GetIn
             user.GroupRepository = repositoryMock.Object;
             repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { group });
 //            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
+            //TODO 
             try{
                 user.CreateGroup(group);
                 Assert.False(true, "exception expected");
             }
-            catch (GroupAlreadyExistsException e){
+            catch (GroupAlreadyExistsException){
                 Assert.True(true);
             }
             
