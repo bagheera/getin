@@ -105,6 +105,7 @@
     <EmbeddedResource Include="Comment.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Content Include="Group.hbm.xml" />
     <Content Include="MaxProfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,7 +9,7 @@ using NHibernate.Mapping;
 namespace GetIn{
     //Comment for a git commit and cruise build test 
     public class User{
-        public IGroupRepository GroupRepository { get; set; }
+        public virtual IGroupRepository GroupRepository { get; set; }
         private const int MAXIMUM_DEGREE_OF_SEPARATION = 3;
         
         public User(){
