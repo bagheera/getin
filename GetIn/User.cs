@@ -185,6 +185,26 @@ namespace GetIn{
             }
             return recommendedFriends;
         }
+
+        public virtual void PostToGroup(Group group, Post post)
+        {
+            if (belongsToGroup(group)) group.post(post);
+            throw new UserHasNotSubscribedException(); 
+        }
+
+        public virtual bool belongsToGroup(Group group)
+        {
+            return this.groups().Contains(group);
+        }
+
+        public virtual IList<Group> groups()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class UserHasNotSubscribedException : Exception
+    {
     }
 
 
