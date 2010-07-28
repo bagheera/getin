@@ -300,7 +300,7 @@ namespace GetIn
                 Dislikes = new HashedSet<Dislike>(dlikes2),
             };
 
-            Assert.AreEqual(2.7d, currentUser.ComputeSimilarityScore(anotherUser));
+            Assert.AreEqual(2.7d, currentUser.SimilarityScore(anotherUser));
         }
     }
 
@@ -535,11 +535,9 @@ namespace GetIn
             session.Flush();
             session.Evict(suchit);
             session.Evict(sumit);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(1, sumit.DegreeOfSeparation(suchit).Count);
         }
-
+        //TODO try not to hit the database
         [Test]
         public void DegreeOfSeparationShouldBeTwoWhenUserIsAFriendOfFriend()
         {
@@ -570,8 +568,6 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(2, suchit.DegreeOfSeparation(manav).Count);
         }
 
@@ -610,8 +606,6 @@ namespace GetIn
             session.Evict(suchit);
             session.Evict(sumit);
             session.Evict(manav);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(1, suchit.DegreeOfSeparation(manav).Count);
         }
 
@@ -658,8 +652,6 @@ namespace GetIn
             session.Evict(sumit);
             session.Evict(manav);
             session.Evict(krishna);
-
-            //IList<User> users = repository.LookupUsers(sumit);
             Assert.AreEqual(3, suchit.DegreeOfSeparation(krishna).Count);
         }
 
@@ -677,7 +669,7 @@ namespace GetIn
         }
 
         [Test]
-        public void UserShouldRecommendOneFriend(){
+        public void RecommendOnlyIfSimilarityScoreExceedsThreshold(){
             var user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
                 Likes = new HashedSet<Like>(new[]

@@ -160,7 +160,7 @@ namespace GetIn{
             return Friends.Contains(other);
         }
 
-        public virtual double ComputeSimilarityScore(User user){
+        public virtual double SimilarityScore(User user){
             double similarityScore = 0d;
             foreach (Like like in Likes){
                 if (user.Likes.Contains(like))
@@ -179,7 +179,7 @@ namespace GetIn{
             IList<User> users = Repository.NotFriendsOf(this);
             IList<User> recommendedFriends = new List<User>();
             foreach (var user in users){
-                if(ComputeSimilarityScore(user) >= 5){
+                if(SimilarityScore(user) >= 5){
                     recommendedFriends.Add(user);
                 }
             }
