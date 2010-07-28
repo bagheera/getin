@@ -15,6 +15,11 @@ namespace GetIn
 
         private ISession session;
         private IUserRepository usrRep;
+        private User user1;
+        private User user2;
+        private User user3;
+        private User loner;
+
 
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
@@ -38,7 +43,7 @@ namespace GetIn
         }
 
         private void LookUsersSetUp(){
-            User user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
+            user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-19)),
                 Location = new Location { City = "Banglore", Country = "India"},
@@ -59,7 +64,7 @@ namespace GetIn
                                }),
             };
             usrRep.Save(user1);
-            User user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
+            user2 = new User(new LoginId("345"), new Name("Sudhakar", "Rayavaram"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-28)),
                 Location = new Location { City = "Seattle", Country = "USA"},
@@ -80,7 +85,7 @@ namespace GetIn
                                }),
             };
             usrRep.Save(user2);
-            User user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
+            user3 = new User(new LoginId("678"), new Name("Alex", "Anto"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-25)),
                 Location = new Location { City = "Banglore", Country = "India"},
@@ -105,7 +110,7 @@ namespace GetIn
             user1.Friends.Add(user3);
             user2.Friends.Add(user3);
 //            user3.Friends.Add(user1);
-            User user4 = new User(new LoginId("91011"), new Name("Vivek", "Jain"))
+            loner = new User(new LoginId("91011"), new Name("Vivek", "Jain"))
             {
                 DateOfBirth = new GetInDate(DateTime.Today.AddYears(-28)),
                 Location = new Location { City = "Calcutta", Country = "India" },
@@ -124,7 +129,7 @@ namespace GetIn
                                    new Dislike() {UserId = new LoginId("91011"), Text = "Dislike5"},
                                }),
             };
-            usrRep.Save(user4);
+            usrRep.Save(loner);
 
         }
 
@@ -198,37 +203,13 @@ namespace GetIn
         }
 
         [Test]
-        public void UserRepositoryReturnsAllUsersMinusFriendsOfUser(){
+        public void NotFriendsOfReturnsAllUsersMinusFriendsOfUser(){
 
-            User user = new User(new LoginId("123"), new Name(null, null));
-            IList<User> results = usrRep.LookupUsers(user);
-            User userWithIdMatched = results[0];
-            Assert.AreEqual(2, userWithIdMatched.Friends.Count);
-            IList<User> notFriendsOfUser = usrRep.NotFriendsOf(userWithIdMatched);
-
+            IList<User> notFriendsOfUser = usrRep.NotFriendsOf(user1);
             Assert.AreEqual(1, notFriendsOfUser.Count);
-            
-            user = new User(new LoginId("91011"), new Name(null, null));
-            results = usrRep.LookupUsers(user);
-            userWithIdMatched = results[0];
-            Assert.AreEqual(0, userWithIdMatched.Friends.Count);
-            notFriendsOfUser = usrRep.NotFriendsOf(userWithIdMatched);
 
+            notFriendsOfUser = usrRep.NotFriendsOf(loner);
             Assert.AreEqual(3, notFriendsOfUser.Count);
         }
-
-
-        /*[Test]
-        public void LookUpUserBasedOnGender(){
-            User usr1 = new User(null, new Name(null, null));
-            usr1.Gender = new Gender();
-        }*/
-        
-        /*[Test]
-        public void LookupUsersForBlankCriteriaShouldReturnZeroResults(){
-            IUserRepository usrRep = new UserRepository(CreateSession());
-            IList<User> selectedUsers = usrRep.LookupUsers(null);
-            Assert.AreEqual(0,selectedUsers.Count);
-        }*/
     }
 }

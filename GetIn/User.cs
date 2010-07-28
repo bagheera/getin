@@ -160,26 +160,26 @@ namespace GetIn{
             return Friends.Contains(other);
         }
 
-        public virtual double ComputeSimilarityScore(User user){
-            double similarity = 0d;
+        public virtual double SimilarityScore(User user){
+            double similarityScore = 0d;
             foreach (Like like in Likes){
                 if (user.Likes.Contains(like))
-                    similarity += 1;
+                    similarityScore += Like.SIMILARITY_SCORE;
             }
 
             foreach (Dislike disLike in Dislikes){
                 if (user.Dislikes.Contains(disLike))
-                    similarity += 0.7d;
+                    similarityScore += Dislike.SIMILARITY_SCORE;
             }
 
-            return similarity;
+            return similarityScore;
         }
 
         public virtual IList<User> RecommendFriends(){
             IList<User> users = Repository.NotFriendsOf(this);
             IList<User> recommendedFriends = new List<User>();
             foreach (var user in users){
-                if(ComputeSimilarityScore(user) >= 5){
+                if(SimilarityScore(user) >= 5){
                     recommendedFriends.Add(user);
                 }
             }
@@ -225,6 +225,7 @@ namespace GetIn{
         private int id;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
+        public const int SIMILARITY_SCORE = 1; 
 
         public virtual bool Equals(Like other){
             if (ReferenceEquals(null, other)) return false;
@@ -246,6 +247,7 @@ namespace GetIn{
 
     public class Dislike{
         private int id;
+        public static double SIMILARITY_SCORE = 0.7d;
         public virtual LoginId UserId { get; set; }
         public virtual string Text { get; set; }
 

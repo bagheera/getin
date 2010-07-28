@@ -300,7 +300,7 @@ namespace GetIn
                 Dislikes = new HashedSet<Dislike>(dlikes2),
             };
 
-            Assert.AreEqual(2.7d, currentUser.ComputeSimilarityScore(anotherUser));
+            Assert.AreEqual(2.7d, currentUser.SimilarityScore(anotherUser));
         }
     }
 
@@ -669,7 +669,7 @@ namespace GetIn
         }
 
         [Test]
-        public void UserShouldRecommendOneFriend(){
+        public void RecommendOnlyIfSimilarityScoreExceedsThreshold(){
             var user1 = new User(new LoginId("123"), new Name("Mark", "Twain"))
             {
                 Likes = new HashedSet<Like>(new[]
