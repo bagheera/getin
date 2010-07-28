@@ -318,10 +318,10 @@ namespace GetIn
         [Test]
         public void ShouldNotBeAbleToCreateGroupIfAlreadyExists(){
             User user = new User(new LoginId("123"), null);
-            Group group = new Group() { Name = "Nature-Lovers" };
+            Group group = new Group() {Name = "Nature-Lovers"};
             var repositoryMock = new Moq.Mock<IGroupRepository>();
             user.GroupRepository = repositoryMock.Object;
-            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { group });
+            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> {group});
 //            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
             //TODO 
             try{
@@ -331,8 +331,18 @@ namespace GetIn
             catch (GroupAlreadyExistsException){
                 Assert.True(true);
             }
-            
+
             repositoryMock.VerifyAll();
+        }
+        [Test]
+        public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
+        {
+            var user1 = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var user2 = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2")) { Profile = new Profile("This is the profile on which user1 will comment") };
+            var comment = new Comment(user1, user2, "This is what I am going to comment");
+            Inbox inbox = user2.GetInbox();
+            Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
+
         }
     }
 
