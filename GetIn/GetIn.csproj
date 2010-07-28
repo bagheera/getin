@@ -78,6 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Group.cs" />
+    <Compile Include="GroupTest.cs" />
     <Compile Include="UserPreferenceRepository.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsTest.cs" />
