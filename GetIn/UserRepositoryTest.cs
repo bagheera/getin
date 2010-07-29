@@ -19,12 +19,13 @@ namespace GetIn
         private User user2;
         private User user3;
         private User loner;
+        private GroupRepository gpRep;
 
 
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            InitalizeSessionFactory(new FileInfo("User.hbm.xml"), new FileInfo("Comment.hbm.xml"));
+            InitalizeSessionFactory(new FileInfo("User.hbm.xml"), new FileInfo("Comment.hbm.xml"), new FileInfo("Group.hbm.xml"));
         }
 
         [SetUp]
@@ -33,6 +34,7 @@ namespace GetIn
             session = this.CreateSession();
             session.BeginTransaction();
             usrRep = new UserRepository(session);
+            gpRep = new GroupRepository(session);
             LookUsersSetUp();
         }
 
@@ -131,6 +133,10 @@ namespace GetIn
             };
             usrRep.Save(loner);
 
+            user1.GroupRepository = gpRep;
+            user2.GroupRepository = gpRep;
+            user3.GroupRepository = gpRep;
+
         }
 
         [Test]
@@ -210,6 +216,14 @@ namespace GetIn
 
             notFriendsOfUser = usrRep.NotFriendsOf(loner);
             Assert.AreEqual(3, notFriendsOfUser.Count);
+        }
+
+        [Test]
+        public void MembershipIsUpdatedWhenUserJoinsGroup(){
+            Group group = new Group("test");
+            user1.CreateGroup(group);
+            session.Evict(group);
+            Assert.True(new GroupRepository(session).Exists(new Group("test")));
         }
     }
 }

@@ -32,7 +32,7 @@ namespace GetIn
         }
 
         [Test]
-        public void ShouldReturnFalseIfGroupIsNotPresent(){
+        public void ExistsReturnFalseIfGroupIsNotPresent(){
             Assert.False(groupRepository.Exists(new Group("test")));
         }
 
@@ -40,6 +40,7 @@ namespace GetIn
         public void ShouldBeAbleToCreateGroup(){
             var group = new Group("test");
             groupRepository.Create(group);
+            session.Evict(group);
             Assert.True(group.Id > 0);
             Assert.True(groupRepository.Exists(group));
         }

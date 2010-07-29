@@ -306,12 +306,25 @@ namespace GetIn
         [Test]
         public void ShouldBeAbleToCreateAGroup(){
             User user = new User(new LoginId("123"), null);
-            Group group = new Group() {Name = "Nature-Lovers"};
-            var repositoryMock = new Moq.Mock<IGroupRepository>();
-            repositoryMock.Setup(p => p.Exists(It.IsAny<Group>())).Returns(false);
-            repositoryMock.Setup(p => p.Create(group));
+            Group group = new Group {Name = "Nature-Lovers"};
+            var repositoryMock = new Mock<IGroupRepository>();
+            repositoryMock.Setup(rep => rep.Exists(It.IsAny<Group>())).Returns(false);
+            repositoryMock.Setup(rep => rep.Create(group));
             user.GroupRepository = repositoryMock.Object;
             user.CreateGroup(group);
+            repositoryMock.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldAutomaticallyJoinAGroupUponCreatingIt(){
+            User user = new User(new LoginId("123"), null);
+            Group group = new Group { Name = "Nature-Lovers" };
+            var repositoryMock = new Mock<IGroupRepository>();
+            repositoryMock.Setup(rep => rep.Exists(It.IsAny<Group>())).Returns(false);
+            repositoryMock.Setup(rep => rep.Create(group));
+            user.GroupRepository = repositoryMock.Object;
+            user.CreateGroup(group);
+            Assert.AreEqual(1, user.Groups.Count);
             repositoryMock.VerifyAll();
         }
 
@@ -323,7 +336,7 @@ namespace GetIn
             user.GroupRepository = repositoryMock.Object;
             repositoryMock.Setup(p => p.Exists(group)).Returns(true);
 //            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
-            //TODO 
+            
             try{
                 user.CreateGroup(group);
                 Assert.False(true, "exception expected");

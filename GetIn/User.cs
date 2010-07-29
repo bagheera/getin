@@ -234,6 +234,7 @@ namespace GetIn
                 throw new GroupAlreadyExistsException(group);
             }
             GroupRepository.Create(group);
+            Join(group);
         }
 
         public virtual void PostToGroup(Group group, Post post)
