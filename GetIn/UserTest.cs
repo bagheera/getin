@@ -348,6 +348,7 @@ namespace GetIn
             var comment2 = new Comment(Suchit, Vivek, "This is a second comment");
 
             Inbox inbox = Vivek.GetInbox();
+
             Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
             Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
 
