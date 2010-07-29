@@ -252,22 +252,38 @@ namespace GetIn
 
        public virtual Inbox GetInbox()
         {
-            var inbox1 = new Inbox();
+            var inbox = new Inbox();
             ISet<Comment> comments = GetAllProfileComments();
            
             
             foreach (var comment in comments)
             {
-                var message = new Message();
-                message.MessageContent = comment.Content;
-                message.Type = "comment";
-                message.Sender = comment.Commentor;
-                message.SentOn = comment.CommentDate.Value;
-                inbox1.addMessage(message);
+                var message = new Message
+                                  {
+                                      MessageContent = comment.Content,
+                                      Type = "comment",
+                                      Sender = comment.Commentor,
+                                      SentOn = comment.CommentDate.Value
+                                  };
+                inbox.addMessage(message);
             }
 
-           inbox1.sortAndTruncateMessages();
-            return inbox1;
+           foreach (var group in Groups){
+               foreach (var post in group.MessageList.groupPostList)
+               {
+                   var message = new Message
+                                     {
+                                         MessageContent = post.Content,
+                                         Type = "Post",
+                                         Sender = null,
+                                         SentOn = post.PostedDateTime
+                                     };
+                   inbox.addMessage(message);
+               }
+           }
+
+           inbox.sortAndTruncateMessages();
+            return inbox;
         }
     }
 
