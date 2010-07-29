@@ -24,6 +24,7 @@ namespace GetIn
             Inviters = new HashedSet<User>();
             Likes = new HashedSet<Like>();
             Dislikes = new HashedSet<Dislike>();
+            Groups = new HashedSet<Group>();
         }
 
         public User(LoginId loginid, Name name)
@@ -58,6 +59,8 @@ namespace GetIn
         public virtual Location Location { get; set; }
 
         public virtual GetInDate DateOfBirth { get; set; }
+
+        public virtual ISet<Group> Groups { get; set; }
 
         public virtual void AddCommentToProfile(Comment comment)
         {
@@ -235,18 +238,16 @@ namespace GetIn
 
         public virtual void PostToGroup(Group group, Post post)
         {
-            if (belongsToGroup(group)) group.post(post);
-            throw new UserHasNotSubscribedException(); 
+            if (belongsToGroup(group)) { group.post(post); }
+            else
+            {
+                throw new UserHasNotSubscribedException();
+            }
         }
 
         public virtual bool belongsToGroup(Group group)
         {
-            return this.groups().Contains(group);
-        }
-
-        public virtual IList<Group> groups()
-        {
-            throw new NotImplementedException();
+            return this.Groups.Contains(group);
         }
 
        public virtual Inbox GetInbox()

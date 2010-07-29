@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Moq;
 using NUnit.Framework;
 
 namespace GetIn
 {
-    class UserMessageTest
+    [TestFixture]
+    public class UserMessageTest
     {
         [Test]
         public void UserCanPostToSubscribedGroup()
         {
             Mock<Group> mockGroup = new Mock<Group>();
             Post post = new Post() {Content = "Some stupid content", PostedDateTime = new DateTime(2010, 01, 01)};
+
+            Group group = mockGroup.Object;
             mockGroup.Setup(foo => foo.post(post));
 
             LoginId loginid = new LoginId("test@ThoughtWorks.com");
@@ -22,14 +22,37 @@ namespace GetIn
             Name name = new Name(firstname, lastname);
 
             User footballFan = new User(loginid, name);
-            //footballFan.
 
+
+            footballFan.Groups.Add(group);
+
+            try
+            {
+                footballFan.PostToGroup(group, post);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Failed");
+            }
         }
 
-        [Test]
+        [Test, ExpectedException(typeof (UserHasNotSubscribedException))]
         public void UserCannotPostToUnsubscribedGroup()
         {
-//            Assert.AreEqual("expected", "actual");
+            Mock<Group> mockGroup = new Mock<Group>();
+            Post post = new Post() {Content = "Some stupid content", PostedDateTime = new DateTime(2010, 01, 01)};
+
+            Group group = mockGroup.Object;
+            mockGroup.Setup(foo => foo.post(post));
+
+            LoginId loginid = new LoginId("test@ThoughtWorks.com");
+            string firstname = "firstName";
+            string lastname = "lastName";
+            Name name = new Name(firstname, lastname);
+
+            User footballFan = new User(loginid, name);
+
+            footballFan.PostToGroup(group, post);
         }
 
         [Test]

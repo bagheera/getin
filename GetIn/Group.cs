@@ -15,9 +15,9 @@ namespace GetIn{
         public string Description { get; set; }
         public virtual GroupPosts MessageList { get; set; }
 
-        public void	 post(Post post1)
+        public virtual void post(Post post1)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
     }
 
