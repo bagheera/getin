@@ -248,12 +248,8 @@ namespace GetIn
         {
             throw new NotImplementedException();
         }
-    }
 
-    public class UserHasNotSubscribedException : Exception
-    {
-    }
-        public virtual Inbox GetInbox()
+       public virtual Inbox GetInbox()
         {
             var inbox1 = new Inbox();
             ISet<Comment> comments = GetAllProfileComments();
@@ -268,6 +264,14 @@ namespace GetIn
 
             return inbox1;
         }
+    }
+
+
+
+    
+
+    public class UserHasNotSubscribedException : Exception
+    {
     }
 
     public class Inbox
@@ -313,6 +317,8 @@ namespace GetIn
             get { return sender; }
             set { sender = value; }
         }
+
+    }
 
 
     public class Photo

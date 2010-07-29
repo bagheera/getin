@@ -334,7 +334,8 @@ namespace GetIn
 
             repositoryMock.VerifyAll();
         }
-        [Test]
+
+        [Test]
         public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
         {
             var user1 = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
