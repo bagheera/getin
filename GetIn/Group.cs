@@ -11,13 +11,13 @@ namespace GetIn{
         }
 
         public virtual string Name { get; set; }
-        public int Id { get; set; }
-        public string Description { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string Description { get; set; }
         public virtual GroupPosts MessageList { get; set; }
 
         public virtual void post(Post post1)
         {
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
     }
 

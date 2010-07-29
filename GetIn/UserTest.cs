@@ -308,7 +308,7 @@ namespace GetIn
             User user = new User(new LoginId("123"), null);
             Group group = new Group() {Name = "Nature-Lovers"};
             var repositoryMock = new Moq.Mock<IGroupRepository>();
-            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { });
+            repositoryMock.Setup(p => p.Exists(It.IsAny<Group>())).Returns(false);
             repositoryMock.Setup(p => p.Create(group));
             user.GroupRepository = repositoryMock.Object;
             user.CreateGroup(group);
@@ -321,7 +321,7 @@ namespace GetIn
             Group group = new Group() {Name = "Nature-Lovers"};
             var repositoryMock = new Moq.Mock<IGroupRepository>();
             user.GroupRepository = repositoryMock.Object;
-            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> {group});
+            repositoryMock.Setup(p => p.Exists(group)).Returns(true);
 //            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
             //TODO 
             try{
@@ -334,7 +334,6 @@ namespace GetIn
 
             repositoryMock.VerifyAll();
         }
-
 
         [Test]
         public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
@@ -352,6 +351,29 @@ namespace GetIn
             Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
             Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
 
+        }
+        [Test]
+        public void InboxShouldShowOnlyFirstTwentyFiveProfileCommentsWhenNotSubscribedToAnyGroup()
+        {
+            var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
+            {
+                Profile = new Profile("This is the profile on which user1 will comment")
+            };
+
+            string sampleComment = "some comment ";
+
+            for (int i = 0; i < 50; i++){
+                new Comment(Suchit, Vivek, sampleComment + i, new GetInDate(new DateTime(i)));
+            }
+      
+
+            Inbox inbox = Vivek.GetInbox();
+            Assert.AreEqual(25, inbox.TotalMessageCount());
+            
+            for (int i = 49; i >= 25; i--){
+                Assert.AreEqual(sampleComment + i, inbox.nextMessage().MessageContent);
+            }
         }
         
         [Test]
@@ -374,7 +396,7 @@ namespace GetIn
         }
 
         [Test]
-        public void InboxShouldShowBothCommentsAndMessages()
+        public void InboxShouldShowBothCommentsAndMessagesInDescindingOrderOfDate()
         {
             var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
             var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))

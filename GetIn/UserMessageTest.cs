@@ -36,7 +36,7 @@ namespace GetIn
             }
         }
 
-        [Test, ExpectedException(typeof (UserHasNotSubscribedException))]
+        [Test]
         public void UserCannotPostToUnsubscribedGroup()
         {
             Mock<Group> mockGroup = new Mock<Group>();
@@ -52,7 +52,15 @@ namespace GetIn
 
             User footballFan = new User(loginid, name);
 
-            footballFan.PostToGroup(group, post);
+
+            try
+            {
+                footballFan.PostToGroup(group, post);
+                Assert.Fail("Failed");
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         [Test]

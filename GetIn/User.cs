@@ -228,8 +228,8 @@ namespace GetIn
         }   
 
         public virtual void CreateGroup(Group group){
-            var groups = GroupRepository.LookupGroup(group);
-            if (groups.Count != 0)
+            var groupExists = GroupRepository.Exists(group);
+            if (groupExists)
             {
                 throw new GroupAlreadyExistsException(group);
             }
@@ -266,7 +266,7 @@ namespace GetIn
                 inbox1.addMessage(message);
             }
 
-           inbox1.sortMessages();
+           inbox1.sortAndTruncateMessages();
             return inbox1;
         }
     }
@@ -290,8 +290,14 @@ namespace GetIn
             return messages[count++];
            
         }
-        public void sortMessages(){
-           messages = messages.OrderByDescending(p => p.SentOn ).ToList();
+        public void sortAndTruncateMessages(){
+           messages = messages.OrderByDescending(p => p.SentOn ).Take(25).ToList();
+           
+        }
+
+        public int	TotalMessageCount(){
+            return messages.Count;
+        
         }
     }
 

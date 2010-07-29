@@ -79,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Group.cs" />
+    <Compile Include="GroupRepository.cs" />
+    <Compile Include="GroupRepositoryTest.cs" />
     <Compile Include="GroupTest.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="UserMessageTest.cs" />
@@ -105,6 +107,9 @@
   <ItemGroup>
     <Content Include="bigProfile.txt" />
     <EmbeddedResource Include="Comment.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Group.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="MaxProfile.txt" />
