@@ -15,8 +15,9 @@ namespace GetIn{
         public virtual string Description { get; set; }
         public virtual GroupPosts MessageList { get; set; }
 
-        public virtual void	 post(Post post1)
+        public virtual void post(Post post1)
         {
+            // throw new NotImplementedException();
         }
 
         public virtual bool Equals(Group other){

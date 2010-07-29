@@ -361,6 +361,29 @@ namespace GetIn
             Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
 
         }
+        [Test]
+        public void InboxShouldShowOnlyFirstTwentyFiveProfileCommentsWhenNotSubscribedToAnyGroup()
+        {
+            var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
+            {
+                Profile = new Profile("This is the profile on which user1 will comment")
+            };
+
+            string sampleComment = "some comment ";
+
+            for (int i = 0; i < 50; i++){
+                new Comment(Suchit, Vivek, sampleComment + i, new GetInDate(new DateTime(i)));
+            }
+      
+
+            Inbox inbox = Vivek.GetInbox();
+            Assert.AreEqual(25, inbox.TotalMessageCount());
+            
+            for (int i = 49; i >= 25; i--){
+                Assert.AreEqual(sampleComment + i, inbox.nextMessage().MessageContent);
+            }
+        }
         
         [Test]
         public void InboxShouldShowMessagesInDescendingOrder()
@@ -382,7 +405,7 @@ namespace GetIn
         }
 
         [Test]
-        public void InboxShouldShowBothCommentsAndMessages()
+        public void InboxShouldShowBothCommentsAndMessagesInDescindingOrderOfDate()
         {
             var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
             var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
@@ -921,4 +944,6 @@ namespace GetIn
         }
         
     }
+
+
 }

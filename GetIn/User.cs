@@ -62,6 +62,8 @@ namespace GetIn
 
         public virtual GetInDate DateOfBirth { get; set; }
 
+        public virtual ISet<Group> Groups { get; set; }
+
         public virtual void AddCommentToProfile(Comment comment)
         {
             UserProfileComments.Add(comment);
@@ -238,18 +240,16 @@ namespace GetIn
 
         public virtual void PostToGroup(Group group, Post post)
         {
-            if (belongsToGroup(group)) group.post(post);
-            throw new UserHasNotSubscribedException(); 
+            if (belongsToGroup(group)) { group.post(post); }
+            else
+            {
+                throw new UserHasNotSubscribedException();
+            }
         }
 
         public virtual bool belongsToGroup(Group group)
         {
-            return this.groups().Contains(group);
-        }
-
-        public virtual IList<Group> groups()
-        {
-            throw new NotImplementedException();
+            return this.Groups.Contains(group);
         }
 
        public virtual Inbox GetInbox()
@@ -268,7 +268,7 @@ namespace GetIn
                 inbox1.addMessage(message);
             }
 
-           inbox1.sortMessages();
+           inbox1.sortAndTruncateMessages();
             return inbox1;
         }
 
@@ -299,8 +299,14 @@ namespace GetIn
             return messages[count++];
            
         }
-        public void sortMessages(){
-           messages = messages.OrderByDescending(p => p.SentOn ).ToList();
+        public void sortAndTruncateMessages(){
+           messages = messages.OrderByDescending(p => p.SentOn ).Take(25).ToList();
+           
+        }
+
+        public int	TotalMessageCount(){
+            return messages.Count;
+        
         }
     }
 
