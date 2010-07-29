@@ -308,7 +308,7 @@ namespace GetIn
             User user = new User(new LoginId("123"), null);
             Group group = new Group {Name = "Nature-Lovers"};
             var repositoryMock = new Mock<IGroupRepository>();
-            repositoryMock.Setup(rep => rep.Exists(It.IsAny<Group>())).Returns(false);
+            repositoryMock.Setup(rep => rep.Exists(group)).Returns(false);
             repositoryMock.Setup(rep => rep.Create(group));
             user.GroupRepository = repositoryMock.Object;
             user.CreateGroup(group);
@@ -324,7 +324,7 @@ namespace GetIn
             repositoryMock.Setup(rep => rep.Create(group));
             user.GroupRepository = repositoryMock.Object;
             user.CreateGroup(group);
-            Assert.AreEqual(1, user.Groups.Count);
+            Assert.AreEqual(group, user.Groups.First());
             repositoryMock.VerifyAll();
         }
 
@@ -335,14 +335,12 @@ namespace GetIn
             var repositoryMock = new Moq.Mock<IGroupRepository>();
             user.GroupRepository = repositoryMock.Object;
             repositoryMock.Setup(p => p.Exists(group)).Returns(true);
-//            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
             
             try{
                 user.CreateGroup(group);
-                Assert.False(true, "exception expected");
+                Assert.Fail("exception expected");
             }
             catch (GroupAlreadyExistsException){
-                Assert.True(true);
             }
 
             repositoryMock.VerifyAll();
