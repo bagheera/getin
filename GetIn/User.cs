@@ -24,6 +24,7 @@ namespace GetIn
             Inviters = new HashedSet<User>();
             Likes = new HashedSet<Like>();
             Dislikes = new HashedSet<Dislike>();
+            Groups = new HashedSet<Group>();
         }
 
         public User(LoginId loginid, Name name)
@@ -34,6 +35,8 @@ namespace GetIn
         }
 
         public virtual ISet<User> Friends { get; set; }
+
+        public virtual ISet<Group> Groups { get; set; }
 
         public virtual ISet<User> Inviters { get; set; }
 
@@ -267,6 +270,13 @@ namespace GetIn
 
            inbox1.sortMessages();
             return inbox1;
+        }
+
+        public virtual void Join(Group group){
+            if (!Groups.Contains(group))
+            {
+                Groups.Add(group);
+            }
         }
     }
 

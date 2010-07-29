@@ -58,6 +58,13 @@
       <many-to-many class="User" column="friend_id"/>
     </set>
 
+
+
+    <set name="Groups" table="GroupMembershipTable" cascade="save-update" lazy="true">
+      <key column="user_id"/>
+      <many-to-many class="Group" column="id"/>
+    </set>
+
     <set name="Inviters" table="InvitationTable" cascade="save-update" lazy="true">
       <key column="user_id"/>
       <many-to-many class="User" column="friend_id"/>

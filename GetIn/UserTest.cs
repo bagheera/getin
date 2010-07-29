@@ -336,6 +336,15 @@ namespace GetIn
         }
 
         [Test]
+        public void UserShouldBeAbleToJoinGroup(){
+            User user = new User(new LoginId("123"), null);
+            Group group = new Group("Nature-Lovers");
+            user.Join(group);
+            Assert.AreEqual(1, user.Groups.Count());
+            Assert.True(user.Groups.Contains(group));
+        }
+
+        [Test]
         public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
         {
             var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
