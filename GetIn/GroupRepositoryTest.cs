@@ -13,7 +13,7 @@ namespace GetIn
         [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            InitalizeSessionFactory(new FileInfo("Group.hbm.xml"));
+            InitalizeSessionFactory(new FileInfo("User.hbm.xml"));
         }
 
         [SetUp]
