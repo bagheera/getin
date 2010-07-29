@@ -334,16 +334,66 @@ namespace GetIn
 
             repositoryMock.VerifyAll();
         }
-        [Test]
+
+        
+        
+        [Test]
         public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
         {
-            var user1 = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
-            var user2 = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2")) { Profile = new Profile("This is the profile on which user1 will comment") };
-            var comment = new Comment(user1, user2, "This is what I am going to comment");
-            Inbox inbox = user2.GetInbox();
+            var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
+                            {
+                                Profile = new Profile("This is the profile on which user1 will comment")
+                            };
+
+            var comment = new Comment(Suchit, Vivek, "This is what I am going to comment");
+            var comment2 = new Comment(Suchit, Vivek, "This is a second comment");
+
+            Inbox inbox = Vivek.GetInbox();
+            Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
+
+        }
+        
+        [Test]
+        public void InboxShouldShowMessagesInDescendingOrder()
+        {
+            var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
+            {
+                Profile = new Profile("This is the profile on which user1 will comment")
+            };
+
+            var comment = new Comment(Suchit, Vivek, "This is what I am going to comment", new GetInDate(new DateTime(2010,7,29)));
+
+            var comment2 = new Comment(Suchit, Vivek, "This is a second comment", new GetInDate(new DateTime(2010,7,30)));
+
+            Inbox inbox = Vivek.GetInbox();
+            Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
             Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
 
         }
+
+        [Test]
+        public void InboxShouldShowBothCommentsAndMessages()
+        {
+            var Suchit = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));
+            var Vivek = new User(new LoginId("testprofile@test.com"), new Name("firstName2", "lastName2"))
+            {
+                Profile = new Profile("This is the profile on which user1 will comment")
+            };
+
+            var comment = new Comment(Suchit, Vivek, "This is what I am going to comment", new GetInDate(DateTime.Now));
+
+            var comment2 = new Comment(Suchit, Vivek, "This is a second comment", new GetInDate(DateTime.Now.Add(new TimeSpan(1000))));
+
+            Inbox inbox = Vivek.GetInbox();
+            Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
+
+        }
+
+
     }
 
     [TestFixture]
