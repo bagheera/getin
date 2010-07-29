@@ -220,10 +220,13 @@ namespace GetIn
 
         [Test]
         public void MembershipIsUpdatedWhenUserJoinsGroup(){
+            int before = session.CreateSQLQuery("select * from GroupMembershipTable").List().Count;
             Group group = new Group("test");
             user1.CreateGroup(group);
+            session.Flush();
             session.Evict(group);
-            Assert.True(new GroupRepository(session).Exists(new Group("test")));
+            int after = session.CreateSQLQuery("select * from GroupMembershipTable").List().Count;
+            Assert.AreEqual(before + 1, after);
         }
     }
 }
