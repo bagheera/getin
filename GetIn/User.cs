@@ -36,8 +36,6 @@ namespace GetIn
 
         public virtual ISet<User> Friends { get; set; }
 
-        public virtual ISet<Group> Groups { get; set; }
-
         public virtual ISet<User> Inviters { get; set; }
 
         public virtual IUserRepository Repository { get; set; }

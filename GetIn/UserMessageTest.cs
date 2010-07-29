@@ -10,11 +10,14 @@ namespace GetIn
         [Test]
         public void UserCanPostToSubscribedGroup()
         {
-            Mock<Group> mockGroup = new Mock<Group>();
+//            Mock<Group> mockGroup = new Mock<Group>();
             Post post = new Post() {Content = "Some stupid content", PostedDateTime = new DateTime(2010, 01, 01)};
 
-            Group group = mockGroup.Object;
-            mockGroup.Setup(foo => foo.post(post));
+//            Group group = mockGroup.Object;
+            Group group = new Group("test");
+            
+//            mockGroup.Setup(foo => foo.post(post));
+//            mockGroup.Setup(foo => foo.Equals(It.IsAny<Group>())).Returns(true);
 
             LoginId loginid = new LoginId("test@ThoughtWorks.com");
             string firstname = "firstName";
