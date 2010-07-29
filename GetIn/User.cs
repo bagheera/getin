@@ -253,15 +253,19 @@ namespace GetIn
         {
             var inbox1 = new Inbox();
             ISet<Comment> comments = GetAllProfileComments();
+           
+            
             foreach (var comment in comments)
             {
                 var message = new Message();
                 message.MessageContent = comment.Content;
                 message.Type = "comment";
                 message.Sender = comment.Commentor;
+                message.SentOn = comment.CommentDate.Value;
                 inbox1.addMessage(message);
             }
 
+           inbox1.sortMessages();
             return inbox1;
         }
     }
@@ -284,6 +288,9 @@ namespace GetIn
         public Message nextMessage(){
             return messages[count++];
            
+        }
+        public void sortMessages(){
+           messages = messages.OrderByDescending(p => p.SentOn ).ToList();
         }
     }
 
