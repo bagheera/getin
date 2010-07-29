@@ -225,15 +225,31 @@ namespace GetIn
         }   
 
         public virtual void CreateGroup(Group group){
-            var groups = GroupRepository.LookupGroup(group);
-            if (groups.Count != 0)
+            var groupExists = GroupRepository.Exists(group);
+            if (groupExists)
             {
                 throw new GroupAlreadyExistsException(group);
             }
             GroupRepository.Create(group);
         }
 
-        public virtual Inbox GetInbox()
+        public virtual void PostToGroup(Group group, Post post)
+        {
+            if (belongsToGroup(group)) group.post(post);
+            throw new UserHasNotSubscribedException(); 
+        }
+
+        public virtual bool belongsToGroup(Group group)
+        {
+            return this.groups().Contains(group);
+        }
+
+        public virtual IList<Group> groups()
+        {
+            throw new NotImplementedException();
+        }
+
+       public virtual Inbox GetInbox()
         {
             var inbox1 = new Inbox();
             ISet<Comment> comments = GetAllProfileComments();
@@ -252,6 +268,14 @@ namespace GetIn
            inbox1.sortAndTruncateMessages();
             return inbox1;
         }
+    }
+
+
+
+    
+
+    public class UserHasNotSubscribedException : Exception
+    {
     }
 
     public class Inbox
