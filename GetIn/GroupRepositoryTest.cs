@@ -32,7 +32,7 @@ namespace GetIn
         }
 
         [Test]
-        public void ShouldReturnFalseIfNoGroupsArePresentInRepository(){
+        public void ShouldReturnFalseIfGroupIsNotPresent(){
             Assert.False(groupRepository.Exists(new Group("test")));
         }
 
