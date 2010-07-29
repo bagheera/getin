@@ -225,8 +225,8 @@ namespace GetIn
         }   
 
         public virtual void CreateGroup(Group group){
-            var groups = GroupRepository.LookupGroup(group);
-            if (groups.Count != 0)
+            var groupExists = GroupRepository.Exists(group);
+            if (groupExists)
             {
                 throw new GroupAlreadyExistsException(group);
             }

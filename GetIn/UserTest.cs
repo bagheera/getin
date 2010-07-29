@@ -308,7 +308,7 @@ namespace GetIn
             User user = new User(new LoginId("123"), null);
             Group group = new Group() {Name = "Nature-Lovers"};
             var repositoryMock = new Moq.Mock<IGroupRepository>();
-            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> { });
+            repositoryMock.Setup(p => p.Exists(It.IsAny<Group>())).Returns(false);
             repositoryMock.Setup(p => p.Create(group));
             user.GroupRepository = repositoryMock.Object;
             user.CreateGroup(group);
@@ -321,7 +321,7 @@ namespace GetIn
             Group group = new Group() {Name = "Nature-Lovers"};
             var repositoryMock = new Moq.Mock<IGroupRepository>();
             user.GroupRepository = repositoryMock.Object;
-            repositoryMock.Setup(p => p.LookupGroup(It.IsAny<Group>())).Returns(new List<Group> {group});
+            repositoryMock.Setup(p => p.Exists(group)).Returns(true);
 //            Assert.Throws(typeof (GroupAlreadyExistsException), user.CreateGroup(group));
             //TODO 
             try{
@@ -334,7 +334,8 @@ namespace GetIn
 
             repositoryMock.VerifyAll();
         }
-        [Test]
+
+        [Test]
         public void InboxShouldShowOnlyProfileCommentsWhenNotSubscribedToAnyGroup()
         {
             var user1 = new User(new LoginId("testcomments@test.com"), new Name("firstName1", "lastName1"));

@@ -79,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Group.cs" />
+    <Compile Include="GroupRepository.cs" />
+    <Compile Include="GroupRepositoryTest.cs" />
     <Compile Include="GroupTest.cs" />
     <Compile Include="IGroupRepository.cs" />
     <Compile Include="UserPreferenceRepository.cs" />
@@ -105,7 +107,9 @@
     <EmbeddedResource Include="Comment.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Content Include="Group.hbm.xml" />
+    <EmbeddedResource Include="Group.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="MaxProfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
