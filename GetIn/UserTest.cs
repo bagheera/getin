@@ -395,13 +395,13 @@ namespace GetIn
                 Profile = new Profile("This is the profile on which user1 will comment")
             };
 
-            var comment = new Comment(Suchit, Vivek, "This is what I am going to comment", new GetInDate(new DateTime(2010,7,29)));
+            var oldComment = new Comment(Suchit, Vivek, "This is what I am going to comment", new GetInDate(new DateTime(2010,7,29)));
 
-            var comment2 = new Comment(Suchit, Vivek, "This is a second comment", new GetInDate(new DateTime(2010,7,30)));
+            var latestComment = new Comment(Suchit, Vivek, "This is a second comment", new GetInDate(new DateTime(2010,7,30)));
 
             Inbox inbox = Vivek.GetInbox();
-            Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
-            Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(latestComment.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(oldComment.Content, inbox.nextMessage().MessageContent);
 
         }
 
@@ -414,25 +414,28 @@ namespace GetIn
                 Profile = new Profile("This is the profile on which user1 will comment")
             };
 
-            var comment = new Comment(suchit, vivek, "This is what I am going to comment", new GetInDate(new DateTime(2010,10,5)));
-            var comment2 = new Comment(suchit, vivek, "This is a second comment", new GetInDate(new DateTime(2010,10,15)));
+            var commentOn5Oct = new Comment(suchit, vivek, "This is what I am going to comment", new GetInDate(new DateTime(2010,10,5)));
+            var commentOn15Oct = new Comment(suchit, vivek, "This is a second comment", new GetInDate(new DateTime(2010,10,15)));
 
             var group = new Group("group1");
-            var post1 = new Post { Content = "content 1 for group1", PostedDateTime = new DateTime(2010, 10, 8) };
-            var post2 = new Post { Content = "content 2 for group1", PostedDateTime = new DateTime(2010, 10, 10) };
-            var groupPosts = new GroupPosts();
-            groupPosts.groupPostList = new List<Post>(){post1,post2};
+            var postOn8Oct = new Post { Content = "content 1 for group1", PostedDateTime = new DateTime(2010, 10, 8) };
+            var postOn10Oct = new Post { Content = "content 2 for group1", PostedDateTime = new DateTime(2010, 10, 10) };
+            var groupPosts = new GroupPosts
+                                 {
+                                     groupPostList = new List<Post>() {postOn8Oct, postOn10Oct}
+                                 };
             group.MessageList = groupPosts;
+           
             vivek.Groups.Add(group);
-            vivek.PostToGroup(group,post1);
-            vivek.PostToGroup(group,post2);
+            vivek.PostToGroup(group,postOn8Oct);
+            vivek.PostToGroup(group,postOn10Oct);
 
             Inbox inbox = vivek.GetInbox();
             Assert.AreEqual(4, inbox.TotalMessageCount());
-            Assert.AreEqual(comment2.Content, inbox.nextMessage().MessageContent);
-            Assert.AreEqual(post2.Content, inbox.nextMessage().MessageContent);
-            Assert.AreEqual(post1.Content, inbox.nextMessage().MessageContent);
-            Assert.AreEqual(comment.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(commentOn15Oct.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(postOn10Oct.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(postOn8Oct.Content, inbox.nextMessage().MessageContent);
+            Assert.AreEqual(commentOn5Oct.Content, inbox.nextMessage().MessageContent);
 
         }
 
