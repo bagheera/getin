@@ -285,6 +285,13 @@ namespace GetIn
            inbox.sortAndTruncateMessages();
             return inbox;
         }
+
+        public virtual void Join(Group group){
+            if (!Groups.Contains(group))
+            {
+                Groups.Add(group);
+            }
+        }
     }
 
 

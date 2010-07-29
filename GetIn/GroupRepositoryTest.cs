@@ -19,7 +19,7 @@ namespace GetIn
         [SetUp]
         public void SetUp()
         {
-            session = this.CreateSession();
+            session = CreateSession();
             session.BeginTransaction();
             groupRepository = new GroupRepository(session);
         }
@@ -32,8 +32,16 @@ namespace GetIn
         }
 
         [Test]
-        public void ShouldReturnFalseIfNoGroupsArePresentInRepository(){
+        public void ShouldReturnFalseIfGroupIsNotPresent(){
             Assert.False(groupRepository.Exists(new Group("test")));
+        }
+
+        [Test]
+        public void ShouldBeAbleToCreateGroup(){
+            var group = new Group("test");
+            groupRepository.Create(group);
+            Assert.True(group.Id > 0);
+            Assert.True(groupRepository.Exists(group));
         }
     }
 }

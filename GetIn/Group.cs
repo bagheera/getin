@@ -19,6 +19,31 @@ namespace GetIn{
         {
             // throw new NotImplementedException();
         }
+
+        public virtual bool Equals(Group other){
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other.Id == Id;
+        }
+
+        public override bool Equals(object obj){
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof (Group)) return false;
+            return Equals((Group) obj);
+        }
+
+        public override int GetHashCode(){
+            return Id;
+        }
+
+        public static bool operator ==(Group left, Group right){
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Group left, Group right){
+            return !Equals(left, right);
+        }
     }
 
     public class GroupPosts

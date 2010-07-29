@@ -6,6 +6,10 @@
     </id>
     <property name="Name" column="name" type="String" />
     <property name="Description" column="desc" type="String" />
+    
   </class>
+  
+  
+  
 </hibernate-mapping>
 
