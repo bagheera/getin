@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace GetIn{
     public class Group{
@@ -12,6 +13,16 @@ namespace GetIn{
         public virtual string Name { get; set; }
         public virtual int Id { get; set; }
         public virtual string Description { get; set; }
+        public virtual GroupPosts MessageList { get; set; }
+
+        public virtual void	 post(Post post1)
+        {
+        }
+    }
+
+    public class GroupPosts
+    {
+        public virtual IList<Post> groupPostList { get; set; } 
     }
 
     public class GroupAlreadyExistsException : Exception{

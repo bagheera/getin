@@ -233,21 +233,49 @@ namespace GetIn
             GroupRepository.Create(group);
         }
 
-        public virtual Inbox GetInbox()
+        public virtual void PostToGroup(Group group, Post post)
+        {
+            if (belongsToGroup(group)) group.post(post);
+            throw new UserHasNotSubscribedException(); 
+        }
+
+        public virtual bool belongsToGroup(Group group)
+        {
+            return this.groups().Contains(group);
+        }
+
+        public virtual IList<Group> groups()
+        {
+            throw new NotImplementedException();
+        }
+
+       public virtual Inbox GetInbox()
         {
             var inbox1 = new Inbox();
             ISet<Comment> comments = GetAllProfileComments();
+           
+            
             foreach (var comment in comments)
             {
                 var message = new Message();
                 message.MessageContent = comment.Content;
                 message.Type = "comment";
                 message.Sender = comment.Commentor;
+                message.SentOn = comment.CommentDate.Value;
                 inbox1.addMessage(message);
             }
 
+           inbox1.sortMessages();
             return inbox1;
         }
+    }
+
+
+
+    
+
+    public class UserHasNotSubscribedException : Exception
+    {
     }
 
     public class Inbox
@@ -260,6 +288,9 @@ namespace GetIn
         public Message nextMessage(){
             return messages[count++];
            
+        }
+        public void sortMessages(){
+           messages = messages.OrderByDescending(p => p.SentOn ).ToList();
         }
     }
 
